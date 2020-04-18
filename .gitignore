@@ -1,3 +1,5 @@
-vocab
 __pycache__
 .idea/
+resources/vocab
+resources/eval
+resources/train

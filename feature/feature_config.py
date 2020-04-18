@@ -14,7 +14,7 @@ class FeatureConfig(object):
            |
            |-- user_profile.json
            |-- user_behavior.json
-           |-- item.json
+           |-- items.json
            |-- context.json
            |-- label.json
 
@@ -56,7 +56,7 @@ class FeatureConfig(object):
         # load user profile config
         config_files = ['user_profile.json',
                         'user_behavior.json',
-                        'item.json',
+                        'items.json',
                         'context.json',
                         'label.json']
         for config_file in config_files:
