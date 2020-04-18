@@ -76,3 +76,7 @@ class TestFeatureConfigMethods(unittest.TestCase):
         self.assertTrue('item.goods_ids' in configs)
         self.assertTrue('context.phone' in configs)
         self.assertTrue('label' in configs)
+
+
+if __name__ == '__main__':
+    unittest.main()
