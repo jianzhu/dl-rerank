@@ -1,6 +1,5 @@
 {
     "item.goods_ids": {
-        "dim": 12,
         "default": 0,
         "type": "sequence_categorical",
         "vocab": "goods_id.txt",
@@ -8,7 +7,6 @@
     },
 
     "item.shop_ids": {
-        "dim": 6,
         "default": 0,
         "type": "sequence_categorical",
         "vocab": "shop_id.txt",
@@ -16,7 +14,6 @@
     },
 
     "item.cate_ids": {
-        "dim": 6,
         "default": 0,
         "type": "sequence_categorical",
         "vocab": "cate_id.txt",
@@ -24,7 +21,6 @@
     },
 
     "item.goods_prices": {
-        "dim": 1,
         "default": 0,
         "type": "sequence_numerical"
     }

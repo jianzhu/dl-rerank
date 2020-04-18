@@ -10,7 +10,7 @@ class FeatureConfig(object):
     """ feature config parser
 
     config path setting:
-        feature_config
+        config
            |
            |-- user_profile.json
            |-- user_behavior.json
@@ -37,6 +37,7 @@ class FeatureConfig(object):
              },
          }
     """
+
     def __init__(self, config_dir):
         self.config_dir = config_dir
         self.configs = collections.OrderedDict()

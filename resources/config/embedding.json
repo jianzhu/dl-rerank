@@ -1,0 +1,66 @@
+[
+  {
+    "dim": 2,
+    "features": [
+      "user.gender"
+    ]
+  },
+  {
+    "dim": 2,
+    "features": [
+      "user.age_level"
+    ]
+  },
+  {
+    "dim": 12,
+    "features": [
+      "user.visited_goods_ids",
+      "item.goods_ids"
+    ]
+  },
+  {
+    "dim": 8,
+    "features": [
+      "user.visited_shop_ids",
+       "item.shop_ids"
+    ]
+  },
+  {
+    "dim": 8,
+    "features": [
+      "user.visited_shop_ids",
+      "item.shop_ids"
+    ]
+  },
+  {
+    "dim": 8,
+    "features": [
+      "user.visited_cate_ids",
+      "item.cate_ids"
+    ]
+  },
+  {
+    "dim": 1,
+    "features": [
+      "user.visited_goods_price"
+    ]
+  },
+  {
+    "dim": 1,
+    "features": [
+      "item.goods_prices"
+    ]
+  },
+  {
+    "dim": 8,
+    "features": [
+      "context.hour"
+    ]
+  },
+  {
+    "dim": 8,
+    "features": [
+      "context.phone"
+    ]
+  }
+]

@@ -1,6 +1,5 @@
 {
   "label": {
-    "dim": 1,
     "default": 0,
     "type": "sequence_numerical"
   }

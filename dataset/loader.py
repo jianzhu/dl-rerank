@@ -22,6 +22,7 @@ class DatasetLoader(object):
          |-- vocab
          |      |-- age.txt
     """
+
     def __init__(self, features_config):
         self.configs = features_config.get_configs()
 
