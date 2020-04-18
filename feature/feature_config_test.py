@@ -2,7 +2,6 @@ import os
 import unittest
 from pathlib import Path
 
-from feature.utils import FeatureGroup
 from feature.utils import FeatureType
 from feature.feature_config import FeatureConfig
 
@@ -18,8 +17,8 @@ class TestFeatureConfigMethods(unittest.TestCase):
         config = feature_config.parse_config(config_file)
 
         # assert gender
-        self.assertTrue('gender' in config)
-        gender = config['gender']
+        self.assertTrue('user.gender' in config)
+        gender = config['user.gender']
         self.assertEqual(2, gender['dim'])
         self.assertEqual(0, gender['default'])
         self.assertEqual(FeatureType.categorical, gender['type'])
@@ -34,8 +33,8 @@ class TestFeatureConfigMethods(unittest.TestCase):
         config = feature_config.parse_config(config_file)
 
         # assert visited_goods_ids
-        self.assertTrue('visited_goods_ids' in config)
-        visited_gids = config['visited_goods_ids']
+        self.assertTrue('user.visited_goods_ids' in config)
+        visited_gids = config['user.visited_goods_ids']
         self.assertEqual(12, visited_gids['dim'])
         self.assertEqual(0, visited_gids['default'])
         self.assertEqual(FeatureType.sequence_categorical, visited_gids['type'])
@@ -43,8 +42,8 @@ class TestFeatureConfigMethods(unittest.TestCase):
         self.assertEqual(100, visited_gids['vocab_size'])
 
         # assert visited_goods_price
-        self.assertTrue('visited_goods_price' in config)
-        visited_gids = config['visited_goods_price']
+        self.assertTrue('user.visited_goods_price' in config)
+        visited_gids = config['user.visited_goods_price']
         self.assertEqual(1, visited_gids['dim'])
         self.assertEqual(0, visited_gids['default'])
         self.assertEqual(FeatureType.sequence_numerical, visited_gids['type'])
@@ -71,9 +70,9 @@ class TestFeatureConfigMethods(unittest.TestCase):
         configs = feature_config.get_configs()
 
         # assert keys
-        self.assertTrue('gender' in configs)
-        self.assertTrue('age_level' in configs)
-        self.assertTrue('visited_goods_ids' in configs)
-        self.assertTrue('goods_ids' in configs)
-        self.assertTrue('phone' in configs)
+        self.assertTrue('user.gender' in configs)
+        self.assertTrue('user.age_level' in configs)
+        self.assertTrue('user.visited_goods_ids' in configs)
+        self.assertTrue('item.goods_ids' in configs)
+        self.assertTrue('context.phone' in configs)
         self.assertTrue('label' in configs)

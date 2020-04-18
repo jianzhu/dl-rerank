@@ -50,6 +50,9 @@ class FeatureConfig(object):
         return config
 
     def get_configs(self):
+        if len(self.configs) != 0:
+            return self.configs
+
         # load user profile config
         config_files = ['user_profile.json',
                         'user_behavior.json',

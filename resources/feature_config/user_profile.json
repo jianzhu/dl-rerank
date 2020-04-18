@@ -1,12 +1,12 @@
 {
-  "gender": {
+  "user.gender": {
     "dim": 2,
     "default": 0,
     "type": "categorical",
     "vocab": "gender.txt",
     "vocab_size": 2
   },
-  "age_level": {
+  "user.age_level": {
     "dim": 2,
     "default": 0,
     "type": "categorical",

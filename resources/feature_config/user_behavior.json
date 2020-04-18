@@ -1,26 +1,26 @@
 {
-  "visited_goods_ids": {
+  "user.visited_goods_ids": {
     "dim": 12,
     "default": 0,
     "type": "sequence_categorical",
     "vocab": "goods_id.txt",
     "vocab_size": 100
   },
-  "visited_shop_ids": {
+  "user.visited_shop_ids": {
     "dim": 6,
     "default": 0,
     "type": "sequence_categorical",
     "vocab": "shop_id.txt",
     "vocab_size": 100
   },
-  "visited_cate_ids": {
+  "user.visited_cate_ids": {
     "dim": 6,
     "default": 0,
     "type": "sequence_categorical",
     "vocab": "cate_id.txt",
     "vocab_size": 100
   },
-  "visited_goods_price": {
+  "user.visited_goods_price": {
     "dim": 1,
     "default": 0,
     "type": "sequence_numerical"

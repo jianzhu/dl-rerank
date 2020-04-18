@@ -6,11 +6,13 @@ import tensorflow as tf
 from absl import app
 from absl import flags
 
-from feature import feature_config
+from feature.feature_config import FeatureConfig
 
 FLAGS = flags.FLAGS
 
-flags.DEFINE_string('dataset_dir', '', 'where to store dataset')
+flags.DEFINE_string('train_dir', '', 'where to store train dataset')
+flags.DEFINE_string('eval_dir', '', 'where to store eval dataset')
+flags.DEFINE_string('fconfig_dir', '', 'feature config dir')
 
 
 def create_int_feature(values):
@@ -24,26 +26,25 @@ def create_float_feature(values):
 
 
 # define feature generate help function
-def gen_user_feature(features):
+def gen_user_feature(features, configs):
     # 1: male, 2: female
-    upb = feature_config.FEATURE_CONFIG['user.gender']['vocab_size']
+    upb = configs['user.gender']['vocab_size']
     gender = [random.randint(1, upb)]
     features['user.gender'] = create_int_feature(gender)
     # 1: < 10, 2: < 20, 3: < 30, ..., 7: < 70, 8: other
-    upb = feature_config.FEATURE_CONFIG['user.age_level']['vocab_size']
+    upb = configs['user.age_level']['vocab_size']
     age_level = [random.randint(1, upb)]
     features['user.age_level'] = create_int_feature(age_level)
 
 
-def gen_behavior_feature(features):
+def gen_behavior_feature(features, configs):
     # visited goods id & shop id & cate id list
     seq_len = random.randint(1, 4)
     feature_info = [
-        ('user.visited_goods_ids', feature_config.FEATURE_CONFIG['user.visited_goods_ids']['vocab_size']),
-        ('user.visited_shop_ids', feature_config.FEATURE_CONFIG['user.visited_shop_ids']['vocab_size']),
-        ('user.visited_cate_ids', feature_config.FEATURE_CONFIG['user.visited_cate_ids']['vocab_size']),
+        ('user.visited_goods_ids', configs['user.visited_goods_ids']['vocab_size']),
+        ('user.visited_shop_ids', configs['user.visited_shop_ids']['vocab_size']),
+        ('user.visited_cate_ids', configs['user.visited_cate_ids']['vocab_size']),
         ('user.visited_goods_price', None),
-        ('user.segment', None)
     ]
 
     for feature, upb in feature_info:
@@ -51,8 +52,6 @@ def gen_behavior_feature(features):
         for _ in range(seq_len):
             if feature == 'user.visited_goods_price':
                 seq.append(random.random() * 10)
-            elif feature == 'user.segment':
-                seq.append(1)
             else:
                 seq.append(random.randint(1, upb))
         if feature == 'user.visited_goods_price':
@@ -61,56 +60,53 @@ def gen_behavior_feature(features):
             features[feature] = create_int_feature(seq)
 
 
-def gen_ads_feature(features, seq_len=5):
+def gen_ads_feature(features, configs, seq_len=5):
     feature_info = [
-        ('ads.goods_ids', feature_config.FEATURE_CONFIG['ads.goods_ids']['vocab_size']),
-        ('ads.shop_ids', feature_config.FEATURE_CONFIG['ads.shop_ids']['vocab_size']),
-        ('ads.cate_ids', feature_config.FEATURE_CONFIG['ads.cate_ids']['vocab_size']),
-        ('ads.goods_prices', None),
-        ('ads.segment', None)
+        ('item.goods_ids', configs['item.goods_ids']['vocab_size']),
+        ('item.shop_ids', configs['item.shop_ids']['vocab_size']),
+        ('item.cate_ids', configs['item.cate_ids']['vocab_size']),
+        ('item.goods_prices', None),
     ]
 
     for feature, upb in feature_info:
         seq = []
         for _ in range(seq_len):
-            if feature == 'ads.goods_prices':
+            if feature == 'item.goods_prices':
                 seq.append(random.random() * 10)
-            elif feature == 'ads.segment':
-                seq.append(2)
             else:
                 seq.append(random.randint(1, upb))
-        if feature == 'ads.goods_prices':
+        if feature == 'item.goods_prices':
             features[feature] = create_float_feature(seq)
         else:
             features[feature] = create_int_feature(seq)
 
 
-def gen_context_feature(features):
+def gen_context_feature(features, configs):
     feature_info = [
-        ('context.hour', feature_config.FEATURE_CONFIG['context.hour']['vocab_size']),
-        ('context.phone', feature_config.FEATURE_CONFIG['context.phone']['vocab_size'])
+        ('context.hour', configs['context.hour']['vocab_size']),
+        ('context.phone', configs['context.phone']['vocab_size'])
     ]
     for feature, upb in feature_info:
         features[feature] = create_int_feature([random.randint(1, upb)])
 
 
-def gen_labels(features, seq_len=5):
+def gen_label(features, seq_len=5):
     seq = []
     for _ in range(seq_len):
         seq.append(float(random.randint(0, 1)))
-    features["labels"] = create_float_feature(seq)
+    features["label"] = create_float_feature(seq)
 
 
-def gen_tfrecord_file(file_name, record_num):
+def gen_tfrecord_file(file_name, record_num, configs):
     writer = tf.io.TFRecordWriter(file_name)
     for _ in range(record_num):
         # feature info
         features = collections.OrderedDict()
-        gen_user_feature(features)
-        gen_behavior_feature(features)
-        gen_ads_feature(features)
-        gen_context_feature(features)
-        gen_labels(features)
+        gen_user_feature(features, configs)
+        gen_behavior_feature(features, configs)
+        gen_ads_feature(features, configs)
+        gen_context_feature(features, configs)
+        gen_label(features)
         # write example
         example = tf.train.Example(features=tf.train.Features(feature=features))
         writer.write(example.SerializeToString())
@@ -118,18 +114,18 @@ def gen_tfrecord_file(file_name, record_num):
 
 
 def main(_):
-    if FLAGS.dataset_dir != '':
-        os.makedirs(FLAGS.dataset_dir, exist_ok=True)
+    feature_config = FeatureConfig(FLAGS.fconfig_dir)
+    fconfigs = feature_config.get_configs()
 
     # train example
-    train_file = os.path.join(FLAGS.dataset_dir, "train.part-00000")
+    train_file = os.path.join(FLAGS.train_dir, "part-00000")
     record_num = 10000
-    gen_tfrecord_file(train_file, record_num)
+    gen_tfrecord_file(train_file, record_num, fconfigs)
 
     # eval example
-    eval_file = os.path.join(FLAGS.dataset_dir, "eval.part-00000")
+    eval_file = os.path.join(FLAGS.eval_dir, "part-00000")
     record_num = 100
-    gen_tfrecord_file(eval_file, record_num)
+    gen_tfrecord_file(eval_file, record_num, fconfigs)
 
 
 if __name__ == '__main__':

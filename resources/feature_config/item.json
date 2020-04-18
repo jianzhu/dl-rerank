@@ -1,5 +1,5 @@
 {
-    "goods_ids": {
+    "item.goods_ids": {
         "dim": 12,
         "default": 0,
         "type": "sequence_categorical",
@@ -7,7 +7,7 @@
         "vocab_size": 100
     },
 
-    "shop_ids": {
+    "item.shop_ids": {
         "dim": 6,
         "default": 0,
         "type": "sequence_categorical",
@@ -15,7 +15,7 @@
         "vocab_size": 100
     },
 
-    "cate_ids": {
+    "item.cate_ids": {
         "dim": 6,
         "default": 0,
         "type": "sequence_categorical",
@@ -23,7 +23,7 @@
         "vocab_size": 100
     },
 
-    "goods_prices": {
+    "item.goods_prices": {
         "dim": 1,
         "default": 0,
         "type": "sequence_numerical"

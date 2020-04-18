@@ -1,19 +1,22 @@
-from feature.feature_config import FEATURE_CONFIG
+import os
+
 from absl import app
 from absl import flags
-import os
+
+from feature.feature_config import FeatureConfig
 
 FLAGS = flags.FLAGS
 
 flags.DEFINE_string('vocab_dir', '', 'where to store vocabulary')
+flags.DEFINE_string('fconfig_dir', '', 'feature config dir')
 
 
 def main(_):
-    if FLAGS.vocab_dir != '':
-        os.makedirs(FLAGS.vocab_dir, exist_ok=True)
+    feature_config = FeatureConfig(FLAGS.fconfig_dir)
+    fconfigs = feature_config.get_configs()
 
     vocab_info = {}
-    for _, desc in FEATURE_CONFIG.items():
+    for _, desc in fconfigs.items():
         if 'vocab' in desc:
             vocab_size = desc['vocab_size']
             vocab_file = desc['vocab']

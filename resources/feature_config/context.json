@@ -1,12 +1,12 @@
 {
-  "hour": {
+  "context.hour": {
     "dim": 2,
     "default": 0,
     "type": "categorical",
     "vocab": "hour.txt",
     "vocab_size": 24
   },
-  "phone": {
+  "context.phone": {
     "dim": 6,
     "default": 0,
     "type": "categorical",
