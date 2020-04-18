@@ -1,0 +1,31 @@
+{
+    "goods_ids": {
+        "dim": 12,
+        "default": 0,
+        "type": "sequence_categorical",
+        "vocab": "goods_id.txt",
+        "vocab_size": 100
+    },
+
+    "shop_ids": {
+        "dim": 6,
+        "default": 0,
+        "type": "sequence_categorical",
+        "vocab": "shop_id.txt",
+        "vocab_size": 100
+    },
+
+    "cate_ids": {
+        "dim": 6,
+        "default": 0,
+        "type": "sequence_categorical",
+        "vocab": "cate_id.txt",
+        "vocab_size": 100
+    },
+
+    "goods_prices": {
+        "dim": 1,
+        "default": 0,
+        "type": "sequence_numerical"
+    }
+}

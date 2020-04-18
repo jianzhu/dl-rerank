@@ -1,0 +1,16 @@
+{
+  "hour": {
+    "dim": 2,
+    "default": 0,
+    "type": "categorical",
+    "vocab": "hour.txt",
+    "vocab_size": 24
+  },
+  "phone": {
+    "dim": 6,
+    "default": 0,
+    "type": "categorical",
+    "vocab": "phone.txt",
+    "vocab_size": 100
+  }
+}

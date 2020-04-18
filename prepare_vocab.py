@@ -1,4 +1,4 @@
-from feature_config import FEATURE_CONFIG
+from feature.feature_config import FEATURE_CONFIG
 from absl import app
 from absl import flags
 import os

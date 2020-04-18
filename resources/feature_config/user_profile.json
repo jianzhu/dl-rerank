@@ -1,0 +1,16 @@
+{
+  "gender": {
+    "dim": 2,
+    "default": 0,
+    "type": "categorical",
+    "vocab": "gender.txt",
+    "vocab_size": 2
+  },
+  "age_level": {
+    "dim": 2,
+    "default": 0,
+    "type": "categorical",
+    "vocab": "age_level.txt",
+    "vocab_size": 8
+  }
+}

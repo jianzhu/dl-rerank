@@ -6,7 +6,7 @@ import tensorflow as tf
 from absl import app
 from absl import flags
 
-from feature_config import FEATURE_CONFIG
+from feature import feature_config
 
 FLAGS = flags.FLAGS
 
@@ -26,11 +26,11 @@ def create_float_feature(values):
 # define feature generate help function
 def gen_user_feature(features):
     # 1: male, 2: female
-    upb = FEATURE_CONFIG['user.gender']['vocab_size']
+    upb = feature_config.FEATURE_CONFIG['user.gender']['vocab_size']
     gender = [random.randint(1, upb)]
     features['user.gender'] = create_int_feature(gender)
     # 1: < 10, 2: < 20, 3: < 30, ..., 7: < 70, 8: other
-    upb = FEATURE_CONFIG['user.age_level']['vocab_size']
+    upb = feature_config.FEATURE_CONFIG['user.age_level']['vocab_size']
     age_level = [random.randint(1, upb)]
     features['user.age_level'] = create_int_feature(age_level)
 
@@ -39,9 +39,9 @@ def gen_behavior_feature(features):
     # visited goods id & shop id & cate id list
     seq_len = random.randint(1, 4)
     feature_info = [
-        ('user.visited_goods_ids', FEATURE_CONFIG['user.visited_goods_ids']['vocab_size']),
-        ('user.visited_shop_ids', FEATURE_CONFIG['user.visited_shop_ids']['vocab_size']),
-        ('user.visited_cate_ids', FEATURE_CONFIG['user.visited_cate_ids']['vocab_size']),
+        ('user.visited_goods_ids', feature_config.FEATURE_CONFIG['user.visited_goods_ids']['vocab_size']),
+        ('user.visited_shop_ids', feature_config.FEATURE_CONFIG['user.visited_shop_ids']['vocab_size']),
+        ('user.visited_cate_ids', feature_config.FEATURE_CONFIG['user.visited_cate_ids']['vocab_size']),
         ('user.visited_goods_price', None),
         ('user.segment', None)
     ]
@@ -63,9 +63,9 @@ def gen_behavior_feature(features):
 
 def gen_ads_feature(features, seq_len=5):
     feature_info = [
-        ('ads.goods_ids', FEATURE_CONFIG['ads.goods_ids']['vocab_size']),
-        ('ads.shop_ids', FEATURE_CONFIG['ads.shop_ids']['vocab_size']),
-        ('ads.cate_ids', FEATURE_CONFIG['ads.cate_ids']['vocab_size']),
+        ('ads.goods_ids', feature_config.FEATURE_CONFIG['ads.goods_ids']['vocab_size']),
+        ('ads.shop_ids', feature_config.FEATURE_CONFIG['ads.shop_ids']['vocab_size']),
+        ('ads.cate_ids', feature_config.FEATURE_CONFIG['ads.cate_ids']['vocab_size']),
         ('ads.goods_prices', None),
         ('ads.segment', None)
     ]
@@ -87,8 +87,8 @@ def gen_ads_feature(features, seq_len=5):
 
 def gen_context_feature(features):
     feature_info = [
-        ('context.hour', FEATURE_CONFIG['context.hour']['vocab_size']),
-        ('context.phone', FEATURE_CONFIG['context.phone']['vocab_size'])
+        ('context.hour', feature_config.FEATURE_CONFIG['context.hour']['vocab_size']),
+        ('context.phone', feature_config.FEATURE_CONFIG['context.phone']['vocab_size'])
     ]
     for feature, upb in feature_info:
         features[feature] = create_int_feature([random.randint(1, upb)])
