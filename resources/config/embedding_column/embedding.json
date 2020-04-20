@@ -1,45 +1,45 @@
 [
   {
-    "dim": 2,
+    "dim": 3,
     "features": [
       "user.gender"
     ]
   },
   {
-    "dim": 2,
+    "dim": 3,
     "features": [
       "user.age_level"
     ]
   },
   {
-    "dim": 12,
+    "dim": 3,
     "features": [
       "user.visited_goods_ids",
       "item.goods_ids"
     ]
   },
   {
-    "dim": 8,
+    "dim": 3,
     "features": [
       "user.visited_shop_ids",
        "item.shop_ids"
     ]
   },
   {
-    "dim": 8,
+    "dim": 3,
     "features": [
       "user.visited_cate_ids",
       "item.cate_ids"
     ]
   },
   {
-    "dim": 8,
+    "dim": 3,
     "features": [
       "context.hour"
     ]
   },
   {
-    "dim": 8,
+    "dim": 3,
     "features": [
       "context.phone"
     ]
