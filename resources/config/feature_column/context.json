@@ -5,6 +5,7 @@
     "vocab": "hour.txt",
     "vocab_size": 24
   },
+
   "context.phone": {
     "default": 0,
     "type": "categorical",

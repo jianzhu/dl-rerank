@@ -5,18 +5,21 @@
     "vocab": "goods_id.txt",
     "vocab_size": 100
   },
+
   "user.visited_shop_ids": {
     "default": 0,
     "type": "sequence_categorical",
     "vocab": "shop_id.txt",
     "vocab_size": 100
   },
+
   "user.visited_cate_ids": {
     "default": 0,
     "type": "sequence_categorical",
     "vocab": "cate_id.txt",
     "vocab_size": 100
   },
+
   "user.visited_goods_price": {
     "default": 0,
     "type": "sequence_numerical"

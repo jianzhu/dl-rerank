@@ -1,3 +1,4 @@
+import json
 import collections
 import os
 import random
@@ -6,13 +7,11 @@ import tensorflow as tf
 from absl import app
 from absl import flags
 
-from feature.feature_config import FeatureConfig
-
 FLAGS = flags.FLAGS
 
 flags.DEFINE_string('train_dir', '', 'where to store train dataset')
 flags.DEFINE_string('eval_dir', '', 'where to store eval dataset')
-flags.DEFINE_string('fconfig_dir', '', 'feature config dir')
+flags.DEFINE_string('config_dir', '', 'feature config dir')
 
 
 def create_int_feature(values):
@@ -122,18 +121,20 @@ def gen_tfrecord_file(file_name, record_num, configs):
 
 
 def main(_):
-    feature_config = FeatureConfig(FLAGS.fconfig_dir)
-    fconfigs = feature_config.get_configs()
+    configs = {}
+    for config_file in tf.io.gfile.listdir(FLAGS.config_dir):
+        with tf.io.gfile.GFile(os.path.join(FLAGS.config_dir, config_file)) as f:
+            configs.update(json.loads(''.join([line for line in f.readlines()])))
 
     # train example
     train_file = os.path.join(FLAGS.train_dir, "part-00000")
     record_num = 10000
-    gen_tfrecord_file(train_file, record_num, fconfigs)
+    gen_tfrecord_file(train_file, record_num, configs)
 
     # eval example
     eval_file = os.path.join(FLAGS.eval_dir, "part-00000")
     record_num = 100
-    gen_tfrecord_file(eval_file, record_num, fconfigs)
+    gen_tfrecord_file(eval_file, record_num, configs)
 
 
 if __name__ == '__main__':

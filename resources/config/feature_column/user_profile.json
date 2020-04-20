@@ -5,6 +5,7 @@
     "vocab": "gender.txt",
     "vocab_size": 2
   },
+
   "user.age_level": {
     "default": 0,
     "type": "categorical",
