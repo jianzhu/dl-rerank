@@ -19,9 +19,13 @@ class ItemsEmbedding(tf.keras.layers.Layer):
 
     def call(self, features, training=False):
         # shape: (B, T, E)
-        sequence_embed = self.items_layer(features)
+        sequence_embed, _ = self.items_layer(features)
+        print('sequence embedding shape')
+        print(tf.shape(sequence_embed))
         # shape: (B, T, 1)
-        sequence_price = tf.sparse.to_dense(features['item.goods_prices'])
+        sequence_price = tf.expand_dims(tf.sparse.to_dense(features['item.goods_prices']), axis=-1)
+        print('sequence price shape')
+        print(tf.shape(sequence_price))
         # shape: (B, T, E+1)
         items_rep = tf.concat([sequence_embed, sequence_price], axis=-1)
         # apply dropout

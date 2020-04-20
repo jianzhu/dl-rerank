@@ -4,22 +4,23 @@ from model.pbm_reranker import PBMReRanker
 
 
 def model_fn(features, labels, mode, params):
-    feature_config = params['feature_configs']
+    feature_config = params['feature_config']
     dropout_rate = params['dropout_rate']
     pbm_reranker = PBMReRanker(feature_config, rate=dropout_rate)
 
-    training = (mode == tf.estimator.ModeKeys.TRRAIN)
+    training = (mode == tf.estimator.ModeKeys.TRAIN)
 
     if mode == tf.estimator.ModeKeys.PREDICT:
-        prediction = tf.nn.sigmoid(pbm_reranker(features, training))
+        logits = pbm_reranker(features, training)
+        prediction = tf.nn.sigmoid(logits)
         predictions = {
             'prediction': prediction,
-            'auc': tf.compat.v1.metrics.auc(labels, prediction)
         }
         return tf.estimator.EstimatorSpec(mode, predictions=predictions)
 
     with tf.GradientTape() as tape:
-        prediction = tf.nn.sigmoid(pbm_reranker(features, training))
+        logits = pbm_reranker(features, training)
+        prediction = tf.nn.sigmoid(logits)
         loss = tf.compat.v1.losses.log_loss(labels, prediction)
 
     metrics = {
