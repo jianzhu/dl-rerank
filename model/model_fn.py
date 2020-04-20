@@ -1,4 +1,6 @@
 import tensorflow as tf
+import tensorflow_addons as tfa
+
 
 from model.pbm_reranker import PBMReRanker
 
@@ -30,7 +32,9 @@ def model_fn(features, labels, mode, params):
     }
     if mode == tf.estimator.ModeKeys.EVAL:
         return tf.estimator.EstimatorSpec(mode, loss=loss, eval_metric_ops=metrics)
-    optimizer = tf.keras.optimizers.Adam(learning_rate=1e-3)
+    optimizer = tfa.optimizers.LazyAdam(1e-4)
+    optimizer.iterations = tf.compat.v1.train.get_or_create_global_step()
+
     trainable_variables = pbm_reranker.trainable_variables
     gradients = tape.gradient(loss, trainable_variables)
     optimize = optimizer.apply_gradients(zip(gradients, trainable_variables))

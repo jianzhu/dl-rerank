@@ -18,10 +18,10 @@ flags.DEFINE_string('eval_files_dir', None, 'eval data set file directory')
 flags.DEFINE_string('model_path', 'pbm_reranker', 'model path')
 flags.DEFINE_integer('batch_size', 256, 'batch size')
 flags.DEFINE_float('dropout_rate', 0.3, 'dropout rate')
-flags.DEFINE_integer('train_max_steps', 100, 'maximum train steps')
+flags.DEFINE_integer('train_max_steps', 10000, 'maximum train steps')
 flags.DEFINE_integer('eval_steps', -1, 'eval steps')
 flags.DEFINE_integer('throttle_secs', 60 * 60, 're-evaluate time past (seconds) after last evaluation')
-flags.DEFINE_integer('checkpoint_steps', 10, 'save checkpoints every this many steps')
+flags.DEFINE_integer('checkpoint_steps', 1000, 'save checkpoints every this many steps')
 
 
 def main(_):

@@ -9,7 +9,7 @@ FLAGS = flags.FLAGS
 
 def train_input_fn(feature_config):
     loader = DataLoader(feature_config)
-    return lambda: loader.load_data(FLAGS.train_files_dir, FLAGS.batch_size)
+    return lambda: loader.load_data(FLAGS.train_files_dir, FLAGS.batch_size).repeat()
 
 
 def eval_input_fn(feature_config):
