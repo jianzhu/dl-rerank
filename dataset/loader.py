@@ -7,7 +7,7 @@ from tensorflow import feature_column as fc
 from feature.utils import FeatureType
 
 
-class DatasetLoader(object):
+class DataLoader(object):
     """load tfrecord format data set
 
 
@@ -26,7 +26,7 @@ class DatasetLoader(object):
     def __init__(self, features_config):
         self.configs = features_config.get_configs()
 
-    def load_data(self, file_dir, vocab_dir, batch_size=None):
+    def load_data(self, file_dir, vocab_dir, batch_size=512):
         shard_num, shard_id = self.get_shard_info()
         files = tf.data.Dataset.list_files(os.path.join(file_dir, 'part-*'))
         files = files.shard(shard_num, shard_id)
@@ -58,7 +58,7 @@ class DatasetLoader(object):
             columns.append(self.get_column(feature, config, vocab_dir))
 
         dataset = tf.data.TFRecordDataset(tf_file, buffer_size=256*1024*1024)
-        dataset = dataset.shuffle(buffer_size=batch_size*10, reshuffle_each_iteration=True)
+        #dataset = dataset.shuffle(buffer_size=batch_size*10, reshuffle_each_iteration=True)
         parse_spec = fc.make_parse_example_spec(columns)
         dataset = dataset.map(map_func=lambda x: self.parse_example(x, parse_spec), num_parallel_calls=8)
         dataset = dataset.batch(batch_size=batch_size)
@@ -81,6 +81,7 @@ class DatasetLoader(object):
                                                                      vocabulary_file=vocab_file,
                                                                      default_value=0,
                                                                      dtype=tf.int64)
+            ft = fc.embedding_column(ft, dimension=3)
         elif feature_type == FeatureType.sequence_numerical:
             ft = fc.sequence_numeric_column(key=feature, dtype=tf.float32)
         else:
@@ -92,3 +93,38 @@ class DatasetLoader(object):
         label = tf.expand_dims(tf.sparse.to_dense(features.pop('label')), axis=-1)
         return features, label
 
+
+from feature.feature_config import FeatureConfig
+from pathlib import Path
+
+root_path = Path(__file__).parent.parent
+config_dir = os.path.join(root_path, 'resources/config')
+feature_config = FeatureConfig(config_dir)
+data_loader = DataLoader(feature_config)
+
+file_dir = os.path.join(root_path, 'resources/train')
+vocab_dir = os.path.join(root_path, 'resources/vocab')
+dataset = data_loader.load_data(file_dir, vocab_dir, 2)
+
+features, label = next(iter(dataset))
+
+from tensorflow import keras
+print(keras.layers.DenseFeatures())
+
+print('user.visited_shop_ids')
+print(features['user.visited_shop_ids'])
+
+print('user.visited_goods_ids')
+print(tf.sparse.to_dense(features['user.visited_goods_ids']))
+
+print('user.visited_cate_ids')
+print(tf.sparse.to_dense(features['user.visited_cate_ids']))
+
+print('item.shop_ids')
+print(tf.sparse.to_dense(features['item.shop_ids']))
+
+print('item.goods_ids')
+print(tf.sparse.to_dense(features['item.goods_ids']))
+
+print('item.cate_ids')
+print(tf.sparse.to_dense(features['item.cate_ids']))

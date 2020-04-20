@@ -37,7 +37,7 @@ def gen_user_feature(features, configs):
     features['user.age_level'] = create_int_feature(age_level)
 
 
-def gen_behavior_feature(features, configs):
+def gen_behavior_feature(features, configs, test=False):
     # visited goods id & shop id & cate id list
     seq_len = random.randint(1, 4)
     feature_info = [
@@ -53,7 +53,10 @@ def gen_behavior_feature(features, configs):
             if feature == 'user.visited_goods_price':
                 seq.append(random.random() * 10)
             else:
-                seq.append(random.randint(1, upb))
+                rnd = random.randint(1, upb)
+                if test:
+                    rnd += 100000000
+                seq.append(rnd)
         if feature == 'user.visited_goods_price':
             features[feature] = create_float_feature(seq)
         else:
@@ -99,14 +102,19 @@ def gen_label(features, seq_len=5):
 
 def gen_tfrecord_file(file_name, record_num, configs):
     writer = tf.io.TFRecordWriter(file_name)
-    for _ in range(record_num):
+    for i in range(record_num):
         # feature info
         features = collections.OrderedDict()
         gen_user_feature(features, configs)
-        gen_behavior_feature(features, configs)
+        test = False
+        if i == 1:
+            test = True
+        gen_behavior_feature(features, configs, test)
         gen_ads_feature(features, configs)
         gen_context_feature(features, configs)
         gen_label(features)
+        if i == 1:
+            print(features)
         # write example
         example = tf.train.Example(features=tf.train.Features(feature=features))
         writer.write(example.SerializeToString())

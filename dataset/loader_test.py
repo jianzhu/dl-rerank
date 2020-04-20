@@ -6,12 +6,12 @@ import tempfile
 import unittest
 
 from unittest.mock import MagicMock
-from dataset.loader import DatasetLoader
+from dataset.loader import DataLoader
 from feature.feature_config import FeatureConfig
 from feature.utils import FeatureType
 
 
-class TestDatasetLoaderMethods(unittest.TestCase):
+class TestDataLoaderMethods(unittest.TestCase):
     @staticmethod
     def create_vocab(vocab_dir, vocab_file):
         with open(os.path.join(vocab_dir, vocab_file), 'w') as f:
@@ -29,7 +29,7 @@ class TestDatasetLoaderMethods(unittest.TestCase):
         fconfig.get_configs = MagicMock()
         fconfig.get_configs.return_value = {}
 
-        loader = DatasetLoader(fconfig)
+        loader = DataLoader(fconfig)
         shard_num, shard_id = loader.get_shard_info()
         self.assertEqual(1, shard_num)
         self.assertEqual(0, shard_id)
@@ -48,7 +48,7 @@ class TestDatasetLoaderMethods(unittest.TestCase):
         fconfig.get_configs = MagicMock()
         fconfig.get_configs.return_value = {}
 
-        loader = DatasetLoader(fconfig)
+        loader = DataLoader(fconfig)
         shard_num, shard_id = loader.get_shard_info()
         self.assertEqual(4, shard_num)
         self.assertEqual(0, shard_id)
@@ -67,7 +67,7 @@ class TestDatasetLoaderMethods(unittest.TestCase):
         fconfig.get_configs = MagicMock()
         fconfig.get_configs.return_value = {}
 
-        loader = DatasetLoader(fconfig)
+        loader = DataLoader(fconfig)
         shard_num, shard_id = loader.get_shard_info()
         self.assertEqual(4, shard_num)
         self.assertEqual(1, shard_id)
@@ -86,7 +86,7 @@ class TestDatasetLoaderMethods(unittest.TestCase):
         fconfig.get_configs = MagicMock()
         fconfig.get_configs.return_value = {}
 
-        loader = DatasetLoader(fconfig)
+        loader = DataLoader(fconfig)
         shard_num, shard_id = loader.get_shard_info()
         self.assertEqual(1, shard_num)
         self.assertEqual(0, shard_id)
@@ -100,7 +100,7 @@ class TestDatasetLoaderMethods(unittest.TestCase):
         fconfig.get_configs = MagicMock()
         fconfig.get_configs.return_value = {}
 
-        loader = DatasetLoader(fconfig)
+        loader = DataLoader(fconfig)
         column = loader.get_column(feature, config, vocab_dir)
         column_config = column.get_config()
         # assert column type
@@ -125,7 +125,7 @@ class TestDatasetLoaderMethods(unittest.TestCase):
         fconfig.get_configs = MagicMock()
         fconfig.get_configs.return_value = {}
 
-        loader = DatasetLoader(fconfig)
+        loader = DataLoader(fconfig)
         column = loader.get_column(feature, config, vocab_dir)
         column_config = column.get_config()['categorical_column']['config']
         # assert column type
@@ -148,7 +148,7 @@ class TestDatasetLoaderMethods(unittest.TestCase):
         fconfig.get_configs = MagicMock()
         fconfig.get_configs.return_value = {}
 
-        loader = DatasetLoader(fconfig)
+        loader = DataLoader(fconfig)
         column = loader.get_column(feature, config)
         column_config = column.get_config()
         # assert column type

@@ -2,76 +2,89 @@ import os
 import unittest
 from pathlib import Path
 
-from feature.utils import FeatureType
+import tensorflow as tf
 from feature.feature_config import FeatureConfig
 
 
 class TestFeatureConfigMethods(unittest.TestCase):
 
-    def test_parse_config_user_profile(self):
+    def check_feature_column(self,
+                             expected_feature,
+                             expected_column_type,
+                             expected_dtype,
+                             feature_columns,
+                             expected_vocab=None):
+        self.assertTrue(expected_feature in feature_columns)
+        column = feature_columns[expected_feature]
+        # assert feature column type
+        self.assertTrue(expected_column_type in str(type(column)))
+        column_config = column.get_config()
+        if expected_column_type == '.SequenceCategoricalColumn':
+            column_config = column.get_config()['categorical_column']['config']
+
+        # assert feature name
+        self.assertEqual(expected_feature, column_config.get('key'))
+        # assert dtype
+        self.assertEqual(expected_dtype, column_config.get('dtype'))
+        # assert vocabulary file
+        if expected_vocab is not None:
+            self.assertEqual(expected_vocab, column_config.get('vocabulary_file'))
+
+    def test_get_feature_columns(self):
         root_path = Path(__file__).parent.parent
         config_dir = os.path.join(root_path, 'resources/config')
-        feature_config = FeatureConfig(config_dir)
+        vocab_dir = os.path.join(root_path, 'resources/vocab')
+        feature_config = FeatureConfig(config_dir, vocab_dir)
 
-        config_file = 'user_profile.json'
-        config = feature_config.parse_config(config_file)
+        feature_columns = feature_config.get_feature_columns()
 
-        # assert gender
-        self.assertTrue('user.gender' in config)
-        gender = config['user.gender']
-        self.assertEqual(0, gender['default'])
-        self.assertEqual(FeatureType.categorical, gender['type'])
-        self.assertEqual('gender.txt', gender['vocab'])
-        self.assertEqual(2, gender['vocab_size'])
+        # check user.gender categorical
+        expected_feature = 'user.gender'
+        expected_vocab = os.path.join(vocab_dir, 'gender.txt')
+        expected_column_type = '.VocabularyFileCategoricalColumn'
+        expected_dtype = 'int64'
+        self.check_feature_column(expected_feature,
+                                  expected_column_type,
+                                  expected_dtype,
+                                  feature_columns,
+                                  expected_vocab=expected_vocab)
 
-    def test_parse_config_user_behavior(self):
+        # check user.visited_goods_ids sequence_categorical
+        expected_feature = 'user.visited_goods_ids'
+        expected_vocab = os.path.join(vocab_dir, 'goods_id.txt')
+        expected_column_type = '.SequenceCategoricalColumn'
+        expected_dtype = 'int64'
+        self.check_feature_column(expected_feature,
+                                  expected_column_type,
+                                  expected_dtype,
+                                  feature_columns,
+                                  expected_vocab=expected_vocab)
+
+        # check item.goods_prices sequence_numerical
+        expected_feature = 'item.goods_prices'
+        expected_column_type = '.SequenceNumericColumn'
+        expected_dtype = 'float32'
+        self.check_feature_column(expected_feature,
+                                  expected_column_type,
+                                  expected_dtype,
+                                  feature_columns)
+
+    def test_get_embedding_columns(self):
         root_path = Path(__file__).parent.parent
         config_dir = os.path.join(root_path, 'resources/config')
-        feature_config = FeatureConfig(config_dir)
-        config_file = 'user_behavior.json'
-        config = feature_config.parse_config(config_file)
+        vocab_dir = os.path.join(root_path, 'resources/vocab')
+        feature_config = FeatureConfig(config_dir, vocab_dir)
 
-        # assert visited_goods_ids
-        self.assertTrue('user.visited_goods_ids' in config)
-        visited_gids = config['user.visited_goods_ids']
-        self.assertEqual(0, visited_gids['default'])
-        self.assertEqual(FeatureType.sequence_categorical, visited_gids['type'])
-        self.assertEqual('goods_id.txt', visited_gids['vocab'])
-        self.assertEqual(100, visited_gids['vocab_size'])
+        tf.compat.v1.disable_eager_execution()
+        embedding_columns = feature_config.get_embedding_columns()
 
-        # assert visited_goods_price
-        self.assertTrue('user.visited_goods_price' in config)
-        visited_gids = config['user.visited_goods_price']
-        self.assertEqual(0, visited_gids['default'])
-        self.assertEqual(FeatureType.sequence_numerical, visited_gids['type'])
-
-    def test_parse_config_label(self):
-        root_path = Path(__file__).parent.parent
-        config_dir = os.path.join(root_path, 'resources/config')
-        feature_config = FeatureConfig(config_dir)
-        config_file = 'label.json'
-        config = feature_config.parse_config(config_file)
-
-        # assert label
-        self.assertTrue('label' in config)
-        label = config['label']
-        self.assertEqual(0, label['default'])
-        self.assertEqual(FeatureType.sequence_numerical, label['type'])
-
-    def test_get_configs(self):
-        root_path = Path(__file__).parent.parent
-        config_dir = os.path.join(root_path, 'resources/config')
-        feature_config = FeatureConfig(config_dir)
-
-        configs = feature_config.get_configs()
-
-        # assert keys
-        self.assertTrue('user.gender' in configs)
-        self.assertTrue('user.age_level' in configs)
-        self.assertTrue('user.visited_goods_ids' in configs)
-        self.assertTrue('item.goods_ids' in configs)
-        self.assertTrue('context.phone' in configs)
-        self.assertTrue('label' in configs)
+        # check user.gender embedding type
+        expected_features = [('user.gender', '.EmbeddingColumn'), ('item.goods_ids', '.SharedEmbeddingColumn')]
+        for expected_feature, expected_embedding_type in expected_features:
+            self.assertTrue(expected_feature in embedding_columns)
+            embedding_column = embedding_columns[expected_feature]
+            # assert embedding column type
+            self.assertTrue(expected_embedding_type in str(type(embedding_column)))
 
 
 if __name__ == '__main__':
