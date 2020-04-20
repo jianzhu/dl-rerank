@@ -10,10 +10,10 @@ class PBMReRanker(tf.keras.models.Model):
          arxiv: https://arxiv.org/abs/1904.06813
     """
 
-    def __init__(self, feature_configs, rate=0.3):
+    def __init__(self, feature_config, rate=0.3):
         super(PBMReRanker, self).__init__()
         # items embedding
-        self.items_emb = ItemsEmbedding(feature_configs, rate)
+        self.items_emb = ItemsEmbedding(feature_config, rate)
         self.batch_norm = tf.keras.layers.BatchNormalization()
         self.dense = tf.keras.layers.Dense(1)
 

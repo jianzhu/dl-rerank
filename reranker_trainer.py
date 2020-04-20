@@ -1,56 +1,55 @@
+import os
+
 import tensorflow as tf
 
 from absl import app
 from absl import flags
+from absl import logging
 
-from dataset.loader import DataLoader
-from feature.feature_config import FeatureConfig
-from model.pbm_reranker import PBMReRanker
+from dataset import input_fn
+from feature import feature_config as fc
+from model import model_fn
+from utils import shard_info
 
 FLAGS = flags.FLAGS
 
-# Flag names are globally defined!  So in general, we need to be
-# careful to pick names that are unlikely to be used by other libraries.
-# If there is a conflict, we'll get an error at import time.
 flags.DEFINE_string('config_dir', None, 'feature config directory')
 flags.DEFINE_string('vocab_dir', None, 'feature vocab directory')
 flags.DEFINE_string('train_files_dir', None, 'train data set file directory')
 flags.DEFINE_string('eval_files_dir', None, 'eval data set file directory')
+flags.DEFINE_string('model_path', 'pbm_reranker', 'model path')
 flags.DEFINE_integer('batch_size', 256, 'batch size')
 flags.DEFINE_float('dropout_rate', 0.3, 'dropout rate')
+flags.DEFINE_integer('train_max_steps', 100, 'maximum train steps')
+flags.DEFINE_integer('eval_steps', -1, 'eval steps')
+flags.DEFINE_integer('throttle_secs', 60*60, 're-evaluate time past (seconds) after last evaluation')
+flags.DEFINE_integer('checkpoint_steps', 10, 'save checkpoints every this many steps')
 
 
-def main(argv):
-    # init feature config
-    feature_config = FeatureConfig(config_dir=FLAGS.config_dir, vocab_dir=FLAGS.vocab_dir)
+def main(_):
+    feature_config = fc.FeatureConfig(
+        config_dir=FLAGS.config_dir, vocab_dir=FLAGS.vocab_dir)
+    train_spec = tf.estimator.TrainSpec(
+        input_fn.train_input_fn(feature_config), max_steps=FLAGS.train_max_steps)
+    eval_spec = tf.estimator.EvalSpec(
+        input_fn.eval_input_fn(feature_config),
+        steps=None if FLAGS.eval_steps < 0 else FLAGS.eval_steps, throttle_secs=FLAGS.throttle_secs)
 
-    # reranker model
-    reranker = PBMReRanker(feature_config, rate=FLAGS.dropout_rate)
+    run_config = tf.estimator.RunConfig(
+        model_dir=FLAGS.model_path, save_checkpoints_steps=FLAGS.checkpoint_steps)
+    estimator = tf.estimator.Estimator(
+        model_fn=model_fn, config=run_config, params={"feature_config": feature_config})
 
-    # loss and optimizer
-    loss_fn = tf.keras.losses.BinaryCrossentropy(from_logits=True)
-    optimizer = tf.keras.optimizers.Adam(learning_rate=1e-3)
+    tf.estimator.train_and_evaluate(estimator, train_spec, eval_spec)
 
-    #@tf.function
-    def train_step(x, y):
-        with tf.GradientTape() as tape:
-            logits = reranker(x)
-            loss = loss_fn(y, logits)
-            gradients = tape.gradient(loss, reranker.trainable_weights)
-        optimizer.apply_gradients(zip(gradients, reranker.trainable_weights))
-        return loss
-
-    # load train & valid dataset
-    data_loader = DataLoader(feature_config)
-    train_dataset = data_loader.load_data(file_dir=FLAGS.train_files_dir, batch_size=FLAGS.batch_size)
-    eval_dataset = data_loader.load_data(file_dir=FLAGS.eval_files_dir, batch_size=FLAGS.batch_size)
-
-    for step, (x, y) in enumerate(train_dataset):
-        print(step)
-        print(x)
-        print(y)
+    _, shard_id = shard_info.get_shard_info()
+    if shard_id == 0:
+        if FLAGS.evaluation:
+            logging.info("begin the final evaluation:")
+            metrics = estimator.evaluate(input_fn.eval_input_fn(feature_config))
+            print(metrics)
+        estimator.export_saved_model(FLAGS.model_path, input_fn.build_serving_fn(feature_config))
 
 
 if __name__ == '__main__':
-    tf.compat.v1.disable_eager_execution()
     app.run(main)

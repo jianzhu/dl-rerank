@@ -7,10 +7,10 @@ class ItemsEmbedding(tf.keras.layers.Layer):
         transform items feature info into embedding representation
     """
 
-    def __init__(self, feature_configs, rate=0.3):
+    def __init__(self, feature_config, rate=0.3):
         super(ItemsEmbedding, self).__init__()
 
-        feature_columns = feature_configs.get_feature_columns()
+        feature_columns = feature_config.get_feature_columns()
         columns = [feature_columns.get('item.goods_ids'),
                    feature_columns.get('item.shop_ids'),
                    feature_columns.get('item.cate_ids')]

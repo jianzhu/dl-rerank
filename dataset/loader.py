@@ -1,8 +1,9 @@
-import json
 import os
 
 import tensorflow as tf
 from tensorflow import feature_column as fc
+
+from utils import shard_info
 
 
 class DataLoader(object):
@@ -19,35 +20,15 @@ class DataLoader(object):
          |
     """
 
-    def __init__(self, features_config):
-        self.columns = [x for _, x in features_config.get_feature_columns().items()]
+    def __init__(self, feature_config):
+        self.columns = [x for _, x in feature_config.get_feature_columns().items()]
         print(self.columns)
 
     def load_data(self, file_dir, batch_size=512):
-        shard_num, shard_id = self.get_shard_info()
+        shard_num, shard_id = shard_info.get_shard_info()
         files = tf.data.Dataset.list_files(os.path.join(file_dir, 'part-*'))
         files = files.shard(shard_num, shard_id)
         return files.flat_map(lambda tf_file: self.load_file(tf_file, batch_size))
-
-    def get_shard_info(self):
-        tf_config = os.environ.get('TF_CONFIG', None)
-        if tf_config is None:
-            return 1, 0
-
-        config = json.loads(tf_config)
-        worker_num = len(config['cluster']['worker'])
-        chief_num = len(config['cluster']['chief'])
-        shard_num = worker_num + chief_num
-        if config['task']['type'] == 'chief':
-            shard_id = 0
-        elif config['task']['type'] == 'worker':
-            shard_id = config['task']['index'] + 1
-        elif config['task']['type'] == 'evaluator':
-            shard_num = 1
-            shard_id = 0
-        else:
-            raise ValueError('invalid get_shard_info apply logic')
-        return shard_num, shard_id
 
     def load_file(self, tf_file, batch_size):
         dataset = tf.data.TFRecordDataset(tf_file, buffer_size=256*1024*1024)
@@ -60,8 +41,8 @@ class DataLoader(object):
 
     def parse_example(self, serialized, columns):
         features = tf.io.parse_example(serialized=serialized, features=columns)
-        label = tf.expand_dims(tf.sparse.to_dense(features.pop('label')), axis=-1)
-        return features, label
+        labels = tf.expand_dims(tf.sparse.to_dense(features.pop('label')), axis=-1)
+        return features, labels
 
 #
 # from feature.feature_config import FeatureConfig

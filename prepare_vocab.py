@@ -1,22 +1,25 @@
+import json
 import os
+
+import tensorflow as tf
 
 from absl import app
 from absl import flags
 
-from feature.feature_config import FeatureConfig
-
 FLAGS = flags.FLAGS
 
 flags.DEFINE_string('vocab_dir', '', 'where to store vocabulary')
-flags.DEFINE_string('fconfig_dir', '', 'feature config dir')
+flags.DEFINE_string('config_dir', '', 'feature config dir')
 
 
 def main(_):
-    feature_config = FeatureConfig(FLAGS.fconfig_dir)
-    fconfigs = feature_config.get_configs()
+    configs = {}
+    for config_file in tf.io.gfile.listdir(FLAGS.config_dir):
+        with tf.io.gfile.GFile(os.path.join(FLAGS.config_dir, config_file)) as f:
+            configs.update(json.loads(''.join([line for line in f.readlines()])))
 
     vocab_info = {}
-    for _, desc in fconfigs.items():
+    for _, desc in configs.items():
         if 'vocab' in desc:
             vocab_size = desc['vocab_size']
             vocab_file = desc['vocab']
