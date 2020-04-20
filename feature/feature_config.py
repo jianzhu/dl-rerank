@@ -106,7 +106,7 @@ class FeatureConfig(object):
 
         # add label column
         key = 'label'
-        feature_columns[key] = tf.feature_column.sequence_numeric_column(key=key, dtype=tf.float32)
+        feature_columns[key] = tf.feature_column.sequence_numeric_column(key=key, dtype=tf.int64)
         return feature_columns
 
     @staticmethod

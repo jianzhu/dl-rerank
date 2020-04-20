@@ -23,7 +23,6 @@ flags.DEFINE_float('dropout_rate', 0.3, 'dropout rate')
 def main(argv):
     # init feature config
     feature_config = FeatureConfig(config_dir=FLAGS.config_dir, vocab_dir=FLAGS.vocab_dir)
-    tf.compat.v1.enable_eager_execution()
 
     # reranker model
     reranker = PBMReRanker(feature_config, rate=FLAGS.dropout_rate)
@@ -32,7 +31,7 @@ def main(argv):
     loss_fn = tf.keras.losses.BinaryCrossentropy(from_logits=True)
     optimizer = tf.keras.optimizers.Adam(learning_rate=1e-3)
 
-    @tf.function
+    #@tf.function
     def train_step(x, y):
         with tf.GradientTape() as tape:
             logits = reranker(x)
