@@ -69,6 +69,15 @@ class TestFeatureConfigMethods(unittest.TestCase):
                                   expected_dtype,
                                   feature_columns)
 
+        # check label sequence_numerical
+        expected_feature = 'label'
+        expected_column_type = '.SequenceNumericColumn'
+        expected_dtype = 'float32'
+        self.check_feature_column(expected_feature,
+                                  expected_column_type,
+                                  expected_dtype,
+                                  feature_columns)
+
     def test_get_embedding_columns(self):
         root_path = Path(__file__).parent.parent
         config_dir = os.path.join(root_path, 'resources/config')

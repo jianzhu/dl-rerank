@@ -9,21 +9,22 @@ from feature.utils import FeatureType
 class FeatureConfig(object):
     """ feature config parser
 
-    config path setting:
+    1) config path setting:
         config
            |
-           |-- user_profile.json
-           |-- user_behavior.json
-           |-- items.json
-           |-- context.json
-           |-- label.json
+           |-- feature_column
+           |        |-- user_profile.json
+           |        |-- user_behavior.json
+           |        |-- items.json
+           |        |-- context.json
            |
-           |-- embedding.json
+           |-- embedding_column
+           |        |-- embedding.json
+           |
 
-    sparse config file format (json):
+    2) feature column config file format (json):
         {
              "user.gender": {
-                 "dim": 2,
                  "default": 0,
                  "type": 'categorical',
                  "vocab": "vocab.gender.txt",
@@ -31,13 +32,30 @@ class FeatureConfig(object):
              },
 
              "user.age_level": {
-                 "dim": 2,
                  "default": 0,
                  "type": 'categorical',
                  "vocab": "vocab.age_level.txt",
                  "vocab_size": 8
              },
          }
+
+    3) (share) embedding column config file format (json):
+        [
+
+          {
+            "dim": 2,
+            "features": [
+              "user.age_level"
+            ]
+          },
+          {
+            "dim": 12,
+            "features": [
+              "user.visited_goods_ids",
+              "item.goods_ids"
+            ]
+          }
+        ]
     """
 
     def __init__(self, config_dir, vocab_dir):
@@ -50,10 +68,10 @@ class FeatureConfig(object):
         if len(self.feature_columns) != 0:
             return self.feature_columns
 
-        # load user profile config
-        config_files = ['user_profile.json', 'user_behavior.json', 'items.json', 'context.json', 'label.json']
-        for config_file in config_files:
-            with tf.io.gfile.GFile(os.path.join(self.config_dir, config_file)) as f:
+        fc_dir = os.path.join(self.config_dir, 'feature_column')
+        # load feature column config
+        for config_file in tf.io.gfile.listdir(fc_dir):
+            with tf.io.gfile.GFile(os.path.join(fc_dir, config_file)) as f:
                 config = json.loads(''.join([line for line in f.readlines()]))
 
             for feature, desc in config.items():
@@ -77,13 +95,17 @@ class FeatureConfig(object):
                 else:
                     raise ValueError('invalid feature type: {}'.format(ftype))
                 self.feature_columns[feature] = fc
+
+        # add label column
+        key = 'label'
+        self.feature_columns[key] = tf.feature_column.sequence_numeric_column(key=key, dtype=tf.float32)
         return self.feature_columns
 
     def get_embedding_columns(self):
         if len(self.embedding_columns) != 0:
             return self.embedding_columns
 
-        path = os.path.join(self.config_dir, 'embedding.json')
+        path = os.path.join(os.path.join(self.config_dir, 'embedding_column'), 'embedding.json')
         with tf.io.gfile.GFile(path) as f:
             embedding_configs = json.loads(''.join([line for line in f.readlines()]))
 
