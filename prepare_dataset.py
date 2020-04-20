@@ -93,8 +93,8 @@ def gen_context_feature(features, configs):
 def gen_label(features, seq_len=5):
     seq = []
     for _ in range(seq_len):
-        seq.append(float(random.randint(0, 1)))
-    features["label"] = create_float_feature(seq)
+        seq.append(random.randint(0, 1))
+    features["label"] = create_int_feature(seq)
 
 
 def gen_tfrecord_file(file_name, record_num, configs):
