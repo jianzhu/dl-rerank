@@ -23,7 +23,9 @@ def model_fn(features, labels, mode, params):
         }
         return tf.estimator.EstimatorSpec(mode, predictions=predictions)
 
-    optimizer = tfa.optimizers.LazyAdam(FLAGS.learning_rate)
+    lr_schedule = tf.keras.optimizers.schedules.ExponentialDecay(
+        FLAGS.learning_rate, decay_steps=FLAGS.decay_steps, decay_rate=FLAGS.decay_rate, staircase=True)
+    optimizer = tfa.optimizers.LazyAdam(lr_schedule)
     if FLAGS.use_float16:
         optimizer = tf.keras.mixed_precision.experimental.LossScaleOptimizer(
             optimizer, loss_scale='dynamic')

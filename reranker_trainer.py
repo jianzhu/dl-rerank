@@ -23,6 +23,8 @@ flags.DEFINE_integer('eval_steps', -1, 'eval steps')
 flags.DEFINE_integer('throttle_secs', 60, 're-evaluate time past (seconds) after last evaluation')
 flags.DEFINE_integer('checkpoint_steps', 100, 'save checkpoints every this many steps')
 flags.DEFINE_float('learning_rate', 1e-4, 'initial learning rate for adam')
+flags.DEFINE_integer('decay_steps', 10000, 'decay steps')
+flags.DEFINE_float('decay_rate', 0.96, 'decay rate')
 
 # performance flags
 flags.DEFINE_bool('enable_xla', True, 'enable xla')
