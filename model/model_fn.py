@@ -35,6 +35,8 @@ def model_fn(features, labels, mode, params):
         logits = pbm_reranker(features, training)
         prediction = tf.nn.sigmoid(logits)
         loss = tf.compat.v1.losses.log_loss(labels, prediction)
+        # add mba l2 reg loss created during forward pass
+        loss += sum(pbm_reranker.losses)
         if FLAGS.use_float16:
             scaled_loss = optimizer.get_scaled_loss(loss)
 
