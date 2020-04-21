@@ -1,6 +1,7 @@
 import tensorflow as tf
 
 from absl import flags
+from tensorflow.keras.experimental import SequenceFeatures
 
 FLAGS = flags.FLAGS
 
@@ -15,10 +16,10 @@ class ItemsEmbedding(tf.keras.layers.Layer):
         super(ItemsEmbedding, self).__init__()
 
         feature_columns = feature_config.get_feature_columns()
-        self.goods_ids_layer = tf.keras.experimental.SequenceFeatures([feature_columns.get('item.goods_ids')])
-        self.shop_ids_layer = tf.keras.experimental.SequenceFeatures([feature_columns.get('item.shop_ids')])
-        self.cate_ids_layer = tf.keras.experimental.SequenceFeatures([feature_columns.get('item.cate_ids')])
-        self.goods_prices_layer = tf.keras.experimental.SequenceFeatures([feature_columns.get('item.goods_prices')])
+        self.goods_ids_layer = SequenceFeatures([feature_columns.get('item.goods_ids')])
+        self.shop_ids_layer = SequenceFeatures([feature_columns.get('item.shop_ids')])
+        self.cate_ids_layer = SequenceFeatures([feature_columns.get('item.cate_ids')])
+        self.goods_prices_layer = SequenceFeatures([feature_columns.get('item.goods_prices')])
         self.dropout = tf.keras.layers.Dropout(rate=rate)
 
     def call(self, features, training=False):
@@ -50,6 +51,5 @@ class ItemsEmbedding(tf.keras.layers.Layer):
         x_count = tf.math.reciprocal(x_count)
         # shape: (B, T, 1)
         x_count = tf.expand_dims(x_count, axis=-1)
-        print("x_count shape: {}".format(tf.shape(x_count)))
         # add mini-batch aware loss
-        self.add_loss(FLAGS.l2_reg_w * tf.reduce_sum(x_count * embedding))
+        self.add_loss(FLAGS.l2_reg_w * tf.reduce_sum(x_count * tf.square(embedding)))

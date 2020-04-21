@@ -22,7 +22,6 @@ class DataLoader(object):
 
     def __init__(self, feature_config):
         self.columns = [x for _, x in feature_config.get_feature_columns().items()]
-        print(self.columns)
 
     def load_data(self, file_dir, batch_size=512):
         shard_num, shard_id = shard_info.get_shard_info()
