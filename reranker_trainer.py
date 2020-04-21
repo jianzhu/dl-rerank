@@ -18,14 +18,32 @@ flags.DEFINE_string('eval_files_dir', None, 'eval data set file directory')
 flags.DEFINE_string('model_path', 'pbm_reranker', 'model path')
 flags.DEFINE_integer('batch_size', 256, 'batch size')
 flags.DEFINE_float('dropout_rate', 0.3, 'dropout rate')
-flags.DEFINE_integer('train_max_steps', 10000, 'maximum train steps')
+flags.DEFINE_integer('train_max_steps', 1000, 'maximum train steps')
 flags.DEFINE_integer('eval_steps', -1, 'eval steps')
-flags.DEFINE_integer('throttle_secs', 60 * 60, 're-evaluate time past (seconds) after last evaluation')
-flags.DEFINE_integer('checkpoint_steps', 1000, 'save checkpoints every this many steps')
+flags.DEFINE_integer('throttle_secs', 60, 're-evaluate time past (seconds) after last evaluation')
+flags.DEFINE_integer('checkpoint_steps', 100, 'save checkpoints every this many steps')
+flags.DEFINE_float('learning_rate', 1e-4, 'initial learning rate for adam')
+
+# performance flags
+flags.DEFINE_bool('enable_xla', True, 'enable xla')
+flags.DEFINE_bool('use_float16', True, 'use float16 mixed_precision')
+
+
+def performance_optimize():
+    # enable xla
+    if FLAGS.enable_xla:
+        tf.config.optimizer.set_jit(True)
+
+    # enable layer fp16 mixed precision computation
+    if FLAGS.use_float16:
+        policy = tf.keras.mixed_precision.experimental.Policy('mixed_float16')
+        tf.keras.mixed_precision.experimental.set_policy(policy)
 
 
 def main(_):
     tf.compat.v1.disable_eager_execution()
+
+    performance_optimize()
 
     feature_config = fc.FeatureConfig(
         config_dir=FLAGS.config_dir, vocab_dir=FLAGS.vocab_dir)

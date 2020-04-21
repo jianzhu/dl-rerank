@@ -1,8 +1,11 @@
 import tensorflow as tf
 import tensorflow_addons as tfa
 
+from absl import flags
 
 from model.pbm_reranker import PBMReRanker
+
+FLAGS = flags.FLAGS
 
 
 def model_fn(features, labels, mode, params):
@@ -20,10 +23,18 @@ def model_fn(features, labels, mode, params):
         }
         return tf.estimator.EstimatorSpec(mode, predictions=predictions)
 
+    optimizer = tfa.optimizers.LazyAdam(FLAGS.learning_rate)
+    if FLAGS.use_float16:
+        optimizer = tf.keras.mixed_precision.experimental.LossScaleOptimizer(
+            optimizer, loss_scale='dynamic')
+    optimizer.iterations = tf.compat.v1.train.get_or_create_global_step()
+
     with tf.GradientTape() as tape:
         logits = pbm_reranker(features, training)
         prediction = tf.nn.sigmoid(logits)
         loss = tf.compat.v1.losses.log_loss(labels, prediction)
+        if FLAGS.use_float16:
+            scaled_loss = optimizer.get_scaled_loss(loss)
 
     metrics = {
         'auc': tf.compat.v1.metrics.auc(labels, prediction),
@@ -32,11 +43,13 @@ def model_fn(features, labels, mode, params):
     }
     if mode == tf.estimator.ModeKeys.EVAL:
         return tf.estimator.EstimatorSpec(mode, loss=loss, eval_metric_ops=metrics)
-    optimizer = tfa.optimizers.LazyAdam(1e-4)
-    optimizer.iterations = tf.compat.v1.train.get_or_create_global_step()
 
     trainable_variables = pbm_reranker.trainable_variables
-    gradients = tape.gradient(loss, trainable_variables)
+    if FLAGS.use_float16:
+        gradients = tape.gradient(scaled_loss, trainable_variables)
+        gradients = optimizer.get_unscaled_gradients(gradients)
+    else:
+        gradients = tape.gradient(loss, trainable_variables)
     optimize = optimizer.apply_gradients(zip(gradients, trainable_variables))
     update_ops = tf.compat.v1.get_collection(tf.compat.v1.GraphKeys.UPDATE_OPS)
     train_op = tf.group([optimize, update_ops])

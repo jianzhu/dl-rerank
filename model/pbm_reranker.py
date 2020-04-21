@@ -15,7 +15,7 @@ class PBMReRanker(tf.keras.models.Model):
         # items embedding
         self.items_emb = ItemsEmbedding(feature_config, rate)
         self.batch_norm = tf.keras.layers.BatchNormalization()
-        self.dense = tf.keras.layers.Dense(1)
+        self.dense = tf.keras.layers.Dense(1, dtype=tf.float32)
 
     def call(self, features, training=False):
         x = self.items_emb(features, training=training)

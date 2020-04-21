@@ -96,10 +96,6 @@ class FeatureConfig(object):
                                                                                             vocabulary_file=vocab_file,
                                                                                             default_value=0,
                                                                                             dtype=tf.int64)
-                elif ftype == FeatureType.numerical:
-                    fc = tf.feature_column.numeric_column(key=feature, dtype=tf.float32)
-                elif ftype == FeatureType.sequence_numerical:
-                    fc = tf.feature_column.sequence_numeric_column(key=feature, dtype=tf.float32)
                 else:
                     raise ValueError('invalid feature type: {}'.format(ftype))
                 feature_columns[feature] = fc

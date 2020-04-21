@@ -22,6 +22,8 @@
 
     "item.goods_prices": {
         "default": 0,
-        "type": "sequence_numerical"
+        "type": "sequence_categorical",
+        "vocab": "goods_price.txt",
+        "vocab_size": 100
     }
 }

@@ -13,21 +13,14 @@ class ItemsEmbedding(tf.keras.layers.Layer):
         feature_columns = feature_config.get_feature_columns()
         columns = [feature_columns.get('item.goods_ids'),
                    feature_columns.get('item.shop_ids'),
-                   feature_columns.get('item.cate_ids')]
+                   feature_columns.get('item.cate_ids'),
+                   feature_columns.get('item.goods_prices')]
         self.items_layer = tf.keras.experimental.SequenceFeatures(columns)
         self.dropout = tf.keras.layers.Dropout(rate=rate)
 
     def call(self, features, training=False):
         # shape: (B, T, E)
-        sequence_embed, _ = self.items_layer(features)
-        print('sequence embedding shape')
-        print(tf.shape(sequence_embed))
-        # shape: (B, T, 1)
-        sequence_price = tf.expand_dims(tf.sparse.to_dense(features['item.goods_prices']), axis=-1)
-        print('sequence price shape')
-        print(tf.shape(sequence_price))
-        # shape: (B, T, E+1)
-        items_rep = tf.concat([sequence_embed, sequence_price], axis=-1)
+        items_rep, _ = self.items_layer(features)
         # apply dropout
         items_rep = self.dropout(items_rep, training=training)
         return items_rep

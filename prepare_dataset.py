@@ -43,21 +43,14 @@ def gen_behavior_feature(features, configs):
         ('user.visited_goods_ids', configs['user.visited_goods_ids']['vocab_size']),
         ('user.visited_shop_ids', configs['user.visited_shop_ids']['vocab_size']),
         ('user.visited_cate_ids', configs['user.visited_cate_ids']['vocab_size']),
-        ('user.visited_goods_price', None),
+        ('user.visited_goods_price', configs['user.visited_cate_ids']['vocab_size']),
     ]
 
     for feature, upb in feature_info:
         seq = []
-        for i in range(seq_len):
-            if feature == 'user.visited_goods_price':
-                seq.append(random.random() * 10)
-            else:
-                rnd = random.randint(1, upb)
-                seq.append(rnd)
-        if feature == 'user.visited_goods_price':
-            features[feature] = create_float_feature(seq)
-        else:
-            features[feature] = create_int_feature(seq)
+        for _ in range(seq_len):
+            seq.append(random.randint(1, upb))
+        features[feature] = create_int_feature(seq)
 
 
 def gen_ads_feature(features, configs, seq_len=5):
@@ -65,20 +58,14 @@ def gen_ads_feature(features, configs, seq_len=5):
         ('item.goods_ids', configs['item.goods_ids']['vocab_size']),
         ('item.shop_ids', configs['item.shop_ids']['vocab_size']),
         ('item.cate_ids', configs['item.cate_ids']['vocab_size']),
-        ('item.goods_prices', None),
+        ('item.goods_prices', configs['item.cate_ids']['vocab_size']),
     ]
 
     for feature, upb in feature_info:
         seq = []
         for _ in range(seq_len):
-            if feature == 'item.goods_prices':
-                seq.append(random.random() * 10)
-            else:
-                seq.append(random.randint(1, upb))
-        if feature == 'item.goods_prices':
-            features[feature] = create_float_feature(seq)
-        else:
-            features[feature] = create_int_feature(seq)
+            seq.append(random.randint(1, upb))
+        features[feature] = create_int_feature(seq)
 
 
 def gen_context_feature(features, configs):

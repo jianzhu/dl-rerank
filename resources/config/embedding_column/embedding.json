@@ -35,6 +35,13 @@
   {
     "dim": 3,
     "features": [
+      "user.visited_goods_prices",
+      "item.goods_prices"
+    ]
+  },
+  {
+    "dim": 3,
+    "features": [
       "context.hour"
     ]
   },
