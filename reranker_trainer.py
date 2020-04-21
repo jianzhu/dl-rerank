@@ -36,7 +36,7 @@ def performance_optimize():
 
     # enable layer fp16 mixed precision computation
     if FLAGS.use_float16:
-        policy = tf.keras.mixed_precision.experimental.Policy('mixed_float16')
+        policy = tf.keras.mixed_precision.experimental.Policy('mixed_float16', loss_scale='dynamic')
         tf.keras.mixed_precision.experimental.set_policy(policy)
 
 
