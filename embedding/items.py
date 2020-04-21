@@ -15,30 +15,34 @@ class ItemsEmbedding(tf.keras.layers.Layer):
     def __init__(self, feature_config, rate=0.3):
         super(ItemsEmbedding, self).__init__()
 
-        feature_columns = feature_config.get_feature_columns()
-        self.goods_ids_layer = SequenceFeatures([feature_columns.get('item.goods_ids')])
-        self.shop_ids_layer = SequenceFeatures([feature_columns.get('item.shop_ids')])
-        self.cate_ids_layer = SequenceFeatures([feature_columns.get('item.cate_ids')])
-        self.goods_prices_layer = SequenceFeatures([feature_columns.get('item.goods_prices')])
-        self.dropout = tf.keras.layers.Dropout(rate=rate)
+        device_spec = tf.DeviceSpec(device_type="CPU", device_index=0)
+        with tf.device(device_spec):
+            feature_columns = feature_config.get_feature_columns()
+            self.goods_ids_layer = SequenceFeatures([feature_columns.get('item.goods_ids')])
+            self.shop_ids_layer = SequenceFeatures([feature_columns.get('item.shop_ids')])
+            self.cate_ids_layer = SequenceFeatures([feature_columns.get('item.cate_ids')])
+            self.goods_prices_layer = SequenceFeatures([feature_columns.get('item.goods_prices')])
+            self.dropout = tf.keras.layers.Dropout(rate=rate)
 
     def call(self, features, training=False):
-        # shape: (B, T, E)
-        goods_ids_emb, _ = self.goods_ids_layer(features)
-        self.add_mba_reg(features, goods_ids_emb, 'item.goods_ids')
-        shop_ids_emb, _ = self.shop_ids_layer(features)
-        self.add_mba_reg(features, shop_ids_emb, 'item.shop_ids')
-        cate_ids_emb, _ = self.cate_ids_layer(features)
-        self.add_mba_reg(features, cate_ids_emb, 'item.cate_ids')
-        goods_prices_emb, _ = self.goods_prices_layer(features)
-        self.add_mba_reg(features, goods_prices_emb, 'item.goods_prices')
+        device_spec = tf.DeviceSpec(device_type="CPU", device_index=0)
+        with tf.device(device_spec):
+            # shape: (B, T, E)
+            goods_ids_emb, _ = self.goods_ids_layer(features)
+            self.add_mba_reg(features, goods_ids_emb, 'item.goods_ids')
+            shop_ids_emb, _ = self.shop_ids_layer(features)
+            self.add_mba_reg(features, shop_ids_emb, 'item.shop_ids')
+            cate_ids_emb, _ = self.cate_ids_layer(features)
+            self.add_mba_reg(features, cate_ids_emb, 'item.cate_ids')
+            goods_prices_emb, _ = self.goods_prices_layer(features)
+            self.add_mba_reg(features, goods_prices_emb, 'item.goods_prices')
 
-        # shape: (B, T, E)
-        items_rep = tf.concat([goods_ids_emb, shop_ids_emb,
-                               cate_ids_emb, goods_prices_emb], axis=-1)
-        # apply dropout
-        items_rep = self.dropout(items_rep, training=training)
-        return items_rep
+            # shape: (B, T, E)
+            items_rep = tf.concat([goods_ids_emb, shop_ids_emb,
+                                   cate_ids_emb, goods_prices_emb], axis=-1)
+            # apply dropout
+            items_rep = self.dropout(items_rep, training=training)
+            return items_rep
 
     def add_mba_reg(self, features, embedding, feature_name):
         # shape: (B, T)
