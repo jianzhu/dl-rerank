@@ -3,7 +3,7 @@ import tensorflow_addons as tfa
 
 from absl import flags
 
-from model.pbm_reranker import PBMReRanker
+from modeling.pbm_reranker import PBMReRanker
 
 FLAGS = flags.FLAGS
 

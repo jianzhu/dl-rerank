@@ -7,7 +7,7 @@ from absl import logging
 
 from dataset import input_fn
 from feature import feature_config as fc
-from model import model_fn
+from modeling import model_fn
 from utils import shard_info
 
 FLAGS = flags.FLAGS
@@ -16,7 +16,7 @@ flags.DEFINE_string('config_dir', None, 'feature config directory')
 flags.DEFINE_string('vocab_dir', None, 'feature vocab directory')
 flags.DEFINE_string('train_files_dir', None, 'train data set file directory')
 flags.DEFINE_string('eval_files_dir', None, 'eval data set file directory')
-flags.DEFINE_string('model_path', 'pbm_reranker', 'model path')
+flags.DEFINE_string('model_path', 'pbm_reranker', 'modeling path')
 flags.DEFINE_integer('batch_size', 256, 'batch size')
 flags.DEFINE_float('dropout_rate', 0.3, 'dropout rate')
 flags.DEFINE_integer('train_max_steps', 10000, 'maximum train steps')
