@@ -3,3 +3,5 @@ __pycache__
 resources/vocab
 resources/eval
 resources/train
+logs/
+rerank_model/
