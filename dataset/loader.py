@@ -1,6 +1,8 @@
 import os
 
 import tensorflow as tf
+
+from absl import logging
 from tensorflow import feature_column as fc
 
 from utils import shard_info
@@ -27,16 +29,20 @@ class DataLoader(object):
         shard_num, shard_id = shard_info.get_shard_info()
         files = tf.data.Dataset.list_files(os.path.join(file_dir, 'part-*'))
         files = files.shard(shard_num, shard_id)
-        return files.flat_map(lambda tf_file: self.load_file(tf_file, batch_size))
+        print_op = tf.print("shard num: {}, shard_id: {}".format(shard_num, shard_id))
+        with tf.control_dependencies([print_op]):
+            return files.flat_map(lambda tf_file: self.load_file(tf_file, batch_size))
 
     def load_file(self, tf_file, batch_size):
-        dataset = tf.data.TFRecordDataset(tf_file, buffer_size=256*1024*1024)
-        dataset = dataset.shuffle(buffer_size=batch_size*10, reshuffle_each_iteration=True)
-        parse_spec = fc.make_parse_example_spec(self.columns)
-        dataset = dataset.map(map_func=lambda x: self.parse_example(x, parse_spec), num_parallel_calls=8)
-        dataset = dataset.batch(batch_size=batch_size)
-        dataset = dataset.prefetch(buffer_size=batch_size*10)
-        return dataset
+        print_op = tf.print("opening file: ", tf_file)
+        with tf.control_dependencies([print_op]):
+            dataset = tf.data.TFRecordDataset(tf_file, buffer_size=256*1024*1024)
+            dataset = dataset.shuffle(buffer_size=batch_size*10, reshuffle_each_iteration=True)
+            parse_spec = fc.make_parse_example_spec(self.columns)
+            dataset = dataset.map(map_func=lambda x: self.parse_example(x, parse_spec), num_parallel_calls=8)
+            dataset = dataset.batch(batch_size=batch_size)
+            dataset = dataset.prefetch(buffer_size=batch_size*10)
+            return dataset
 
     def parse_example(self, serialized, columns):
         features = tf.io.parse_example(serialized=serialized, features=columns)

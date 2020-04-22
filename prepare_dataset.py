@@ -10,6 +10,7 @@ from absl import flags
 FLAGS = flags.FLAGS
 
 flags.DEFINE_string('train_dir', '', 'where to store train dataset')
+flags.DEFINE_integer('train_part_num', 3, 'train file partition num')
 flags.DEFINE_string('eval_dir', '', 'where to store eval dataset')
 flags.DEFINE_string('config_dir', '', 'feature config dir')
 
@@ -107,9 +108,10 @@ def main(_):
             configs.update(json.loads(''.join([line for line in f.readlines()])))
 
     # train example
-    train_file = os.path.join(FLAGS.train_dir, "part-00000")
-    record_num = 10000
-    gen_tfrecord_file(train_file, record_num, configs)
+    for i in range(FLAGS.train_part_num):
+        train_file = os.path.join(FLAGS.train_dir, "part-{:05}".format(i))
+        record_num = 10000
+        gen_tfrecord_file(train_file, record_num, configs)
 
     # eval example
     eval_file = os.path.join(FLAGS.eval_dir, "part-00000")
