@@ -1,3 +1,4 @@
+import os
 import tensorflow as tf
 
 from absl import app
@@ -70,11 +71,12 @@ def main(_):
     tf.estimator.train_and_evaluate(estimator, train_spec, eval_spec)
 
     _, shard_id = shard_info.get_shard_info()
-    if shard_id == 0:
+    if 'TF_CONFIG' not in os.environ or shard_id == 0:
         logging.info("begin the final evaluation:")
         metrics = estimator.evaluate(input_fn.eval_input_fn(feature_config))
         print(metrics)
-        estimator.export_saved_model(FLAGS.model_path, input_fn.build_serving_fn(feature_config))
+        estimator.export_saved_model(os.path.join(FLAGS.model_path, 'final'),
+                                     input_fn.build_serving_fn(feature_config))
 
 
 if __name__ == '__main__':

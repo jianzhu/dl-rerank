@@ -16,12 +16,13 @@ class TestGetShardInfoMethods(unittest.TestCase):
         # test chief shard info
         os.environ['TF_CONFIG'] = json.dumps({
             "cluster": {
-                "chief": ["host0:2222"],
-                "worker": ["host1:2222", "host2:2222", "host3:2222"],
-                "ps": ["host4:2222", "host5:2222"]
+                "chief": ["localhost:2222"],
+                "worker": ["localhost:2223", "localhost:2224", "localhost:2225"],
+                "ps": ["localhost:2226", "localhost:2227"]
             },
             "task": {"type": "chief", "index": 0}
         })
+        print(os.environ['TF_CONFIG'])
         shard_num, shard_id = shard_info.get_shard_info()
         self.assertEqual(4, shard_num)
         self.assertEqual(0, shard_id)
@@ -30,12 +31,14 @@ class TestGetShardInfoMethods(unittest.TestCase):
         # test worker shard info
         os.environ['TF_CONFIG'] = json.dumps({
             "cluster": {
-                "chief": ["host0:2222"],
-                "worker": ["host1:2222", "host2:2222", "host3:2222"],
-                "ps": ["host4:2222", "host5:2222"]
+                "chief": ["localhost:2222"],
+                "worker": ["localhost:2222", "localhost:2222", "localhost:2222"],
+                "ps": ["localhost:2222", "localhost:2222"]
             },
             "task": {"type": "worker", "index": 0}
         })
+        print(os.environ['TF_CONFIG'])
+
         shard_num, shard_id = shard_info.get_shard_info()
         self.assertEqual(4, shard_num)
         self.assertEqual(1, shard_id)
@@ -44,12 +47,14 @@ class TestGetShardInfoMethods(unittest.TestCase):
         # test evaluator shard info
         os.environ['TF_CONFIG'] = json.dumps({
             "cluster": {
-                "chief": ["host0:2222"],
-                "worker": ["host1:2222", "host2:2222", "host3:2222"],
-                "ps": ["host4:2222", "host5:2222"]
+                "chief": ["localhost:2222"],
+                "worker": ["localhost:2222", "localhost:2222", "localhost:2222"],
+                "ps": ["localhost:2222", "host5:2222"]
             },
             "task": {"type": "evaluator", "index": 0}
         })
+        print(os.environ['TF_CONFIG'])
+
         shard_num, shard_id = shard_info.get_shard_info()
         self.assertEqual(1, shard_num)
         self.assertEqual(0, shard_id)
