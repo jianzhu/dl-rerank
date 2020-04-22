@@ -1,4 +1,4 @@
-# dl-rerank
+# dl-rerank (under construction)
 Deep learning powered personalized re-ranking solution
 
 #### User Interest Modeling Strategy
