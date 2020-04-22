@@ -75,8 +75,7 @@ def main(_):
         logging.info("begin the final evaluation:")
         metrics = estimator.evaluate(input_fn.eval_input_fn(feature_config))
         print(metrics)
-        estimator.export_saved_model(os.path.join(FLAGS.model_path, 'final'),
-                                     input_fn.build_serving_fn(feature_config))
+        estimator.export_saved_model(FLAGS.model_path, input_fn.build_serving_fn(feature_config))
 
 
 if __name__ == '__main__':
