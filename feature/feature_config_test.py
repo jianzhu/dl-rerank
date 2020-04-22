@@ -51,12 +51,6 @@ class TestFeatureConfigMethods(unittest.TestCase):
         self.assertTrue(expected_feature in feature_columns)
         self.assertTrue(expected_type in str(type(feature_columns[expected_feature])))
 
-        # check sequence numeric column
-        expected_feature = 'item.goods_prices'
-        expected_type = '.SequenceNumericColumn'
-        self.assertTrue(expected_feature in feature_columns)
-        self.assertTrue(expected_type in str(type(feature_columns[expected_feature])))
-
 
 if __name__ == '__main__':
     unittest.main()
