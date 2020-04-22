@@ -43,7 +43,7 @@ def gen_behavior_feature(features, configs):
         ('user.visited_goods_ids', configs['user.visited_goods_ids']['vocab_size']),
         ('user.visited_shop_ids', configs['user.visited_shop_ids']['vocab_size']),
         ('user.visited_cate_ids', configs['user.visited_cate_ids']['vocab_size']),
-        ('user.visited_goods_price', configs['user.visited_cate_ids']['vocab_size']),
+        ('user.visited_goods_prices', configs['user.visited_cate_ids']['vocab_size']),
     ]
 
     for feature, upb in feature_info:
