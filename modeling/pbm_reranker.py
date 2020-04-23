@@ -1,4 +1,3 @@
-from absl import logging
 import tensorflow as tf
 
 from embedding.items import ItemsEmbedding
@@ -7,7 +6,7 @@ from embedding.user_behavior import UserBehaviorEmbedding
 from embedding.context import ContextEmbedding
 
 from modeling.attentions.din import DIN
-from modeling.activations import dice
+
 
 class PBMReRanker(tf.keras.layers.Layer):
     """ Personalized ReRanker
