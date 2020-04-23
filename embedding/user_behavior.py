@@ -28,6 +28,7 @@ class UserBehaviorEmbedding(tf.keras.layers.Layer):
 
     def call(self, features, training=False):
         device_spec = tf.DeviceSpec(device_type="CPU", device_index=0)
+
         with tf.device(device_spec):
             # shape: (B, T, E)
             vgids_emb, _ = self.vgids_layer(features)
@@ -41,8 +42,6 @@ class UserBehaviorEmbedding(tf.keras.layers.Layer):
 
             # shape: (B, T, E)
             user_behavior_rep = tf.concat([vgids_emb, vsids_emb, vcids_emb, vgprices_emb], axis=-1)
-            # shape: (B, E)
-            user_behavior_rep = tf.reduce_sum(user_behavior_rep, axis=1)
             # apply dropout
             user_behavior_rep = self.dropout(user_behavior_rep, training=training)
             return user_behavior_rep

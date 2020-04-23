@@ -1,3 +1,4 @@
+from absl import logging
 import tensorflow as tf
 
 from embedding.items import ItemsEmbedding
@@ -5,8 +6,10 @@ from embedding.user_profile import UserProfileEmbedding
 from embedding.user_behavior import UserBehaviorEmbedding
 from embedding.context import ContextEmbedding
 
+from modeling.attentions.din import DIN
+from modeling.activations import dice
 
-class PBMReRanker(tf.keras.models.Model):
+class PBMReRanker(tf.keras.layers.Layer):
     """ Personalized ReRanker
 
     ref: Personalized Re-ranking for Recommendation
@@ -24,14 +27,17 @@ class PBMReRanker(tf.keras.models.Model):
         # context embedding
         self.context_emb = ContextEmbedding(feature_config, rate)
 
-        self.batch_norm = tf.keras.layers.BatchNormalization()
+        self.batch_norm = tf.keras.layers.BatchNormalization(axis=-1, epsilon=1e-7)
         self.dense = tf.keras.layers.Dense(1, dtype=tf.float32)
+
+        # din attention layer
+        self.din = DIN()
 
     def call(self, features, training=False):
         # item info
         # shape: (B, T, E)
-        item_rep = self.items_emb(features, training=training)
-        seq_len = tf.shape(item_rep)[1]
+        items_rep = self.items_emb(features, training=training)
+        seq_len = tf.shape(items_rep)[1]
 
         # user profile info
         # shape: (B, E)
@@ -41,11 +47,10 @@ class PBMReRanker(tf.keras.models.Model):
         user_profile_rep = tf.tile(user_profile_rep, [1, seq_len, 1])
 
         # user behavior info
-        # shape: (B, E)
+        # shape: (B, T', E)
         user_behavior_rep = self.user_behavior_emb(features, training=training)
-        user_behavior_rep = tf.expand_dims(user_behavior_rep, axis=1)
         # shape: (B, T, E)
-        user_behavior_rep = tf.tile(user_behavior_rep, [1, seq_len, 1])
+        user_behavior_rep = self.din([user_behavior_rep, items_rep], training=training)
 
         # context info
         # shape: (B, E)
@@ -54,7 +59,6 @@ class PBMReRanker(tf.keras.models.Model):
         # shape: (B, T, E)
         context_rep = tf.tile(context_rep, [1, seq_len, 1])
 
-        x = tf.concat([user_profile_rep, user_behavior_rep, item_rep, context_rep], axis=-1)
+        x = tf.concat([user_profile_rep, user_behavior_rep, items_rep, context_rep], axis=-1)
         x = self.batch_norm(x, training=training)
-        logits = self.dense(x)
-        return logits
+        return self.dense(x)

@@ -11,7 +11,7 @@ class Dice(tf.keras.layers.Layer):
 
     def __init__(self):
         super(Dice, self).__init__()
-        self.bn = tf.keras.layers.BatchNormalization(axis=-1, center=True, scale=True, epsilon=1e-7)
+        self.bn = tf.keras.layers.BatchNormalization(axis=-1, epsilon=1e-7)
 
     def build(self, input_shape):
         self.alpha = self.add_weight(shape=(input_shape[-1],),
