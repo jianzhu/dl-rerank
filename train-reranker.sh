@@ -1,11 +1,11 @@
 #!/usr/bin/env bash
 
-if [ ! -d "logs" ]
+if [[ ! -d "logs" ]]
 then
     mkdir logs
 fi
 
-if [ -d "rerank_model" ]
+if [[ -d "rerank_model" ]]
 then
     rm -rf rerank_model
 fi
