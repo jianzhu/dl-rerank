@@ -30,7 +30,7 @@ class ItemsEmbedding(tf.keras.layers.Layer):
         device_spec = tf.DeviceSpec(device_type="CPU", device_index=0)
         with tf.device(device_spec):
             # shape: (B, T, E)
-            gids_emb, _ = self.gids_layer(features)
+            gids_emb, sequence_len = self.gids_layer(features)
             add_mba_reg(self, features, gids_emb, 'item.goods_ids')
             sids_emb, _ = self.sids_layer(features)
             add_mba_reg(self, features, sids_emb, 'item.shop_ids')
@@ -43,4 +43,4 @@ class ItemsEmbedding(tf.keras.layers.Layer):
             items_rep = tf.concat([gids_emb, sids_emb, cids_emb, gprices_emb], axis=-1)
             # apply dropout
             items_rep = self.dropout(items_rep, training=training)
-            return items_rep
+            return [items_rep, sequence_len]

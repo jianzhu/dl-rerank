@@ -14,6 +14,7 @@ class DIN(tf.keras.layers.Layer):
     def __init__(self):
         super(DIN, self).__init__()
 
+        # attention dense layer
         self.dense1 = tf.keras.layers.Dense(units=36)
         self.dice = dice.Dice()
         self.dense2 = tf.keras.layers.Dense(units=1)

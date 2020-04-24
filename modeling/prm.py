@@ -6,6 +6,7 @@ from embedding.user_behavior import UserBehaviorEmbedding
 from embedding.context import ContextEmbedding
 
 from modeling.attentions.din import DIN
+from modeling.attentions.transformer import Transformer
 
 
 class PRM(tf.keras.layers.Layer):
@@ -15,49 +16,85 @@ class PRM(tf.keras.layers.Layer):
          arxiv: https://arxiv.org/abs/1904.06813
     """
 
-    def __init__(self, feature_config, rate=0.3):
+    def __init__(self,
+                 feature_config,
+                 layer_num,
+                 head_num,
+                 hidden_size,
+                 filter_size,
+                 dropout_rate=0.3):
         super(PRM, self).__init__()
         # items embedding
-        self.items_emb = ItemsEmbedding(feature_config, rate)
+        self.items_emb = ItemsEmbedding(feature_config, rate=dropout_rate)
         # user profile embedding
-        self.user_profile_emb = UserProfileEmbedding(feature_config, rate)
+        self.user_profile_emb = UserProfileEmbedding(feature_config, rate=dropout_rate)
         # user behavior embedding
-        self.user_behavior_emb = UserBehaviorEmbedding(feature_config, rate)
+        self.user_behavior_emb = UserBehaviorEmbedding(feature_config, rate=dropout_rate)
         # context embedding
-        self.context_emb = ContextEmbedding(feature_config, rate)
+        self.context_emb = ContextEmbedding(feature_config, rate=dropout_rate)
 
-        self.batch_norm = tf.keras.layers.BatchNormalization(axis=-1, epsilon=1e-7)
-        self.dense = tf.keras.layers.Dense(1, dtype=tf.float32)
-
-        # din attention layer
+        # din: modeling user interest
         self.din = DIN()
 
+        # transformer: modeling <user, item> self interaction
+        self.transformer = Transformer(layer_num=layer_num,
+                                       head_num=head_num,
+                                       hidden_size=hidden_size,
+                                       filter_size=filter_size,
+                                       dropout_rate=dropout_rate)
+
+        # output mlp transformation
+        self.bn1 = tf.keras.layers.BatchNormalization(epsilon=1e-6)
+        self.drop1 = tf.keras.layers.Dropout(rate=dropout_rate)
+        self.dense1 = tf.keras.layers.Dense(units=200, activation='relu')
+        self.bn2 = tf.keras.layers.BatchNormalization(epsilon=1e-6)
+        self.drop2 = tf.keras.layers.Dropout(rate=dropout_rate)
+        self.dense2 = tf.keras.layers.Dense(units=80, activation='relu')
+        self.bn3 = tf.keras.layers.BatchNormalization(epsilon=1e-6)
+        self.drop3 = tf.keras.layers.Dropout(rate=dropout_rate)
+        self.dense3 = tf.keras.layers.Dense(units=1)
+
+    def mlp(self, outputs, training=False):
+        outputs = self.bn1(outputs, training=training)
+        outputs = self.drop1(outputs, training=training)
+        outputs = self.bn2(outputs, training=training)
+        outputs = self.drop2(outputs, training=training)
+        outputs = self.bn3(outputs, training=training)
+        outputs = self.drop3(outputs, training=training)
+        outputs = self.dense3(outputs, training=training)
+        return outputs
+
     def call(self, features, training=False):
-        # item info
-        # shape: (B, T, E)
-        items_rep = self.items_emb(features, training=training)
-        seq_len = tf.shape(items_rep)[1]
+        items_info = self.items_emb(features, training=training)
+        user_info = self.user_profile_emb(features, training=training)
+        behavior_info = self.user_behavior_emb(features, training=training)
+        context_info = self.context_emb(features, training=training)
+
+        seq_len = tf.shape(items_info[0])[1]
 
         # user profile info
         # shape: (B, E)
-        user_profile_rep = self.user_profile_emb(features, training=training)
-        user_profile_rep = tf.expand_dims(user_profile_rep, axis=1)
+        user_info = tf.expand_dims(user_info, axis=1)
         # shape: (B, T, E)
-        user_profile_rep = tf.tile(user_profile_rep, [1, seq_len, 1])
-
-        # user behavior info
-        # shape: (B, T', E)
-        user_behavior_rep = self.user_behavior_emb(features, training=training)
-        # shape: (B, T, E)
-        user_behavior_rep = self.din([user_behavior_rep, items_rep], training=training)
+        user_info = tf.tile(user_info, [1, seq_len, 1])
 
         # context info
         # shape: (B, E)
-        context_rep = self.context_emb(features, training=training)
-        context_rep = tf.expand_dims(context_rep, axis=1)
+        context_info = tf.expand_dims(context_info, axis=1)
         # shape: (B, T, E)
-        context_rep = tf.tile(context_rep, [1, seq_len, 1])
+        context_info = tf.tile(context_info, [1, seq_len, 1])
 
-        x = tf.concat([user_profile_rep, user_behavior_rep, items_rep, context_rep], axis=-1)
-        x = self.batch_norm(x, training=training)
-        return self.dense(x)
+        # user interest info
+        # shape: (B, T, E)
+        interest_info = self.din([behavior_info[0], items_info[0]], training=training)
+        # shape: (B, T, E)
+        outputs = tf.concat([user_info, context_info, interest_info, items_info[0]], axis=-1)
+
+        # do self-attention
+        outputs = self.transformer([outputs, items_info[1]], training=training)
+
+        # do mlp transformation
+        outputs = self.mlp(outputs, training=training)
+
+        # logits (B, T, 1), input_seq_mask (B, T)
+        return [outputs, tf.sequence_mask(items_info[1])]

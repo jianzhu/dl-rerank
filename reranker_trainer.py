@@ -27,6 +27,10 @@ flags.DEFINE_float('learning_rate', 1e-4, 'initial learning rate for adam')
 flags.DEFINE_integer('decay_steps', 10000, 'decay steps')
 flags.DEFINE_float('decay_rate', 0.96, 'decay rate')
 flags.DEFINE_float('l2_reg_w', 1e-4, 'mini-batch aware regularization weight')
+flags.DEFINE_integer('layer_num', 1, 'transformer layer num')
+flags.DEFINE_integer('head_num', 12, 'transformer head num')
+flags.DEFINE_integer('hidden_size', 36, 'transformer ffn filter size')
+flags.DEFINE_integer('filter_size', 256, 'transformer ffn filter size')
 
 # performance flags
 flags.DEFINE_bool('enable_xla', True, 'enable xla')
@@ -65,7 +69,11 @@ def main(_):
     estimator = tf.estimator.Estimator(
         model_fn=model_fn.model_fn, config=run_config, params={
             'feature_config': feature_config,
-            'dropout_rate': FLAGS.dropout_rate
+            'dropout_rate': FLAGS.dropout_rate,
+            'layer_num': FLAGS.layer_num,
+            'head_num': FLAGS.head_num,
+            'hidden_size': FLAGS.hidden_size,
+            'filter_size': FLAGS.filter_size
         })
 
     tf.estimator.train_and_evaluate(estimator, train_spec, eval_spec)

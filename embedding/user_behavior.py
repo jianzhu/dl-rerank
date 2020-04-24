@@ -31,7 +31,7 @@ class UserBehaviorEmbedding(tf.keras.layers.Layer):
 
         with tf.device(device_spec):
             # shape: (B, T, E)
-            vgids_emb, _ = self.vgids_layer(features)
+            vgids_emb, sequence_len = self.vgids_layer(features)
             add_mba_reg(self, features, vgids_emb, 'user.visited_goods_ids')
             vsids_emb, _ = self.vsids_layer(features)
             add_mba_reg(self, features, vsids_emb, 'user.visited_shop_ids')
@@ -44,4 +44,4 @@ class UserBehaviorEmbedding(tf.keras.layers.Layer):
             user_behavior_rep = tf.concat([vgids_emb, vsids_emb, vcids_emb, vgprices_emb], axis=-1)
             # apply dropout
             user_behavior_rep = self.dropout(user_behavior_rep, training=training)
-            return user_behavior_rep
+            return [user_behavior_rep, sequence_len]

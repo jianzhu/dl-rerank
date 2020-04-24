@@ -11,13 +11,22 @@ FLAGS = flags.FLAGS
 def model_fn(features, labels, mode, params):
     feature_config = params['feature_config']
     dropout_rate = params['dropout_rate']
-    pbm_reranker = PRM(feature_config, rate=dropout_rate)
+    layer_num = params['layer_num']
+    head_num = params['head_num']
+    hidden_size = params['hidden_size']
+    filter_size = params['filter_size']
+    pbm_reranker = PRM(feature_config,
+                       layer_num=layer_num,
+                       head_num=head_num,
+                       hidden_size=hidden_size,
+                       filter_size=filter_size,
+                       dropout_rate=dropout_rate)
 
     training = (mode == tf.estimator.ModeKeys.TRAIN)
 
     if mode == tf.estimator.ModeKeys.PREDICT:
-        logits = pbm_reranker(features, training)
-        prediction = tf.nn.sigmoid(logits)
+        outputs = pbm_reranker(features, training)
+        prediction = tf.nn.sigmoid(outputs[0])
         predictions = {
             'prediction': prediction,
         }
@@ -32,9 +41,13 @@ def model_fn(features, labels, mode, params):
     optimizer.iterations = tf.compat.v1.train.get_or_create_global_step()
 
     with tf.GradientTape() as tape:
-        logits = pbm_reranker(features, training)
+        outputs = pbm_reranker(features, training)
+        # (B, T, 1)
+        logits = outputs[0]
+        # (B, T)
+        weights = tf.expand_dims(tf.cast(outputs[1], dtype=logits.dtype), axis=-1)
         prediction = tf.nn.sigmoid(logits)
-        loss = tf.compat.v1.losses.log_loss(labels, prediction)
+        loss = tf.compat.v1.losses.log_loss(labels, prediction, weights)
         # add mba l2 reg loss created during forward pass
         #print_op = tf.print(pbm_reranker.losses)
         #with tf.control_dependencies([print_op]):
