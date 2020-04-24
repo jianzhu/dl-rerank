@@ -3,7 +3,7 @@ import tensorflow_addons as tfa
 
 from absl import flags
 
-from modeling.pbm_reranker import PBMReRanker
+from modeling.prm import PRM
 
 FLAGS = flags.FLAGS
 
@@ -11,7 +11,7 @@ FLAGS = flags.FLAGS
 def model_fn(features, labels, mode, params):
     feature_config = params['feature_config']
     dropout_rate = params['dropout_rate']
-    pbm_reranker = PBMReRanker(feature_config, rate=dropout_rate)
+    pbm_reranker = PRM(feature_config, rate=dropout_rate)
 
     training = (mode == tf.estimator.ModeKeys.TRAIN)
 

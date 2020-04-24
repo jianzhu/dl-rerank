@@ -8,7 +8,7 @@ from embedding.context import ContextEmbedding
 from modeling.attentions.din import DIN
 
 
-class PBMReRanker(tf.keras.layers.Layer):
+class PRM(tf.keras.layers.Layer):
     """ Personalized ReRanker
 
     ref: Personalized Re-ranking for Recommendation
@@ -16,7 +16,7 @@ class PBMReRanker(tf.keras.layers.Layer):
     """
 
     def __init__(self, feature_config, rate=0.3):
-        super(PBMReRanker, self).__init__()
+        super(PRM, self).__init__()
         # items embedding
         self.items_emb = ItemsEmbedding(feature_config, rate)
         # user profile embedding
