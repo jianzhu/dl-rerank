@@ -28,9 +28,10 @@ flags.DEFINE_integer('decay_steps', 10000, 'decay steps')
 flags.DEFINE_float('decay_rate', 0.96, 'decay rate')
 flags.DEFINE_float('l2_reg_w', 1e-4, 'mini-batch aware regularization weight')
 flags.DEFINE_integer('layer_num', 1, 'transformer layer num')
-flags.DEFINE_integer('head_num', 12, 'transformer head num')
-flags.DEFINE_integer('hidden_size', 36, 'transformer ffn filter size')
-flags.DEFINE_integer('filter_size', 256, 'transformer ffn filter size')
+flags.DEFINE_integer('head_num', 4, 'transformer head num')
+flags.DEFINE_integer('hidden_size', 32, 'transformer ffn filter size')
+flags.DEFINE_integer('filter_size', 64, 'transformer ffn filter size')
+flags.DEFINE_integer('item_emb_size', 64, 'item embedding size')
 
 # performance flags
 flags.DEFINE_bool('enable_xla', True, 'enable xla')

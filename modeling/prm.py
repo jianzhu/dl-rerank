@@ -1,5 +1,7 @@
 import tensorflow as tf
 
+from absl import flags
+
 from embedding.items import ItemsEmbedding
 from embedding.user_profile import UserProfileEmbedding
 from embedding.user_behavior import UserBehaviorEmbedding
@@ -8,6 +10,7 @@ from embedding.context import ContextEmbedding
 from modeling.attentions.din import DIN
 from modeling.attentions.transformer import Transformer
 
+FLAGS = flags.FLAGS
 
 class PRM(tf.keras.layers.Layer):
     """ Personalized ReRanker
@@ -34,7 +37,7 @@ class PRM(tf.keras.layers.Layer):
         self.context_emb = ContextEmbedding(feature_config, rate=dropout_rate)
 
         # din: modeling user interest
-        self.din = DIN()
+        self.din = DIN(dropout_rate=dropout_rate)
 
         # transformer: modeling <user, item> self interaction
         self.transformer = Transformer(layer_num=layer_num,
@@ -43,58 +46,62 @@ class PRM(tf.keras.layers.Layer):
                                        filter_size=filter_size,
                                        dropout_rate=dropout_rate)
 
+        # embedding mlp transformation
+        self.mlp_emb_bn1 = tf.keras.layers.BatchNormalization(epsilon=1e-6)
+        self.mlp_emb_drop1 = tf.keras.layers.Dropout(rate=dropout_rate)
+        self.mlp_emb_dense1 = tf.keras.layers.Dense(64)
+        self.mlp_emb_bn2 = tf.keras.layers.BatchNormalization(epsilon=1e-6)
+        self.mlp_emb_drop2 = tf.keras.layers.Dropout(rate=dropout_rate)
+        self.mlp_emb_dense2 = tf.keras.layers.Dense(FLAGS.hidden_size)
+
         # output mlp transformation
-        self.bn1 = tf.keras.layers.BatchNormalization(epsilon=1e-6)
-        self.drop1 = tf.keras.layers.Dropout(rate=dropout_rate)
-        self.dense1 = tf.keras.layers.Dense(units=200, activation='relu')
-        self.bn2 = tf.keras.layers.BatchNormalization(epsilon=1e-6)
-        self.drop2 = tf.keras.layers.Dropout(rate=dropout_rate)
-        self.dense2 = tf.keras.layers.Dense(units=80, activation='relu')
-        self.bn3 = tf.keras.layers.BatchNormalization(epsilon=1e-6)
-        self.drop3 = tf.keras.layers.Dropout(rate=dropout_rate)
-        self.dense3 = tf.keras.layers.Dense(units=1)
+        self.mlp_bn1 = tf.keras.layers.BatchNormalization(epsilon=1e-6)
+        self.mlp_drop1 = tf.keras.layers.Dropout(rate=dropout_rate)
+        self.mlp_dense1 = tf.keras.layers.Dense(units=200, activation='relu')
+        self.mlp_bn2 = tf.keras.layers.BatchNormalization(epsilon=1e-6)
+        self.mlp_drop2 = tf.keras.layers.Dropout(rate=dropout_rate)
+        self.mlp_dense2 = tf.keras.layers.Dense(units=80, activation='relu')
+        self.mlp_bn3 = tf.keras.layers.BatchNormalization(epsilon=1e-6)
+        self.mlp_drop3 = tf.keras.layers.Dropout(rate=dropout_rate)
+        self.mlp_dense3 = tf.keras.layers.Dense(units=1)
+
+    def mlp_emb(self, inputs, training=False):
+        outputs = self.mlp_emb_bn1(inputs, training=training)
+        outputs = self.mlp_emb_drop1(outputs, training=training)
+        outputs = self.mlp_emb_dense1(outputs, training=training)
+        outputs = self.mlp_emb_bn2(outputs, training=training)
+        outputs = self.mlp_emb_drop2(outputs, training=training)
+        return self.mlp_emb_dense2(outputs, training=training)
 
     def mlp(self, outputs, training=False):
-        outputs = self.bn1(outputs, training=training)
-        outputs = self.drop1(outputs, training=training)
-        outputs = self.bn2(outputs, training=training)
-        outputs = self.drop2(outputs, training=training)
-        outputs = self.bn3(outputs, training=training)
-        outputs = self.drop3(outputs, training=training)
-        outputs = self.dense3(outputs, training=training)
+        outputs = self.mlp_bn1(outputs, training=training)
+        outputs = self.mlp_drop1(outputs, training=training)
+        outputs = self.mlp_dense1(outputs, training=training)
+        outputs = self.mlp_bn2(outputs, training=training)
+        outputs = self.mlp_drop2(outputs, training=training)
+        outputs = self.mlp_dense2(outputs, training=training)
+        outputs = self.mlp_bn3(outputs, training=training)
+        outputs = self.mlp_drop3(outputs, training=training)
+        outputs = self.mlp_dense3(outputs, training=training)
         return outputs
 
     def call(self, features, training=False):
-        items_info = self.items_emb(features, training=training)
-        user_info = self.user_profile_emb(features, training=training)
-        behavior_info = self.user_behavior_emb(features, training=training)
-        context_info = self.context_emb(features, training=training)
-
-        seq_len = tf.shape(items_info[0])[1]
-
-        # user profile info
-        # shape: (B, E)
-        user_info = tf.expand_dims(user_info, axis=1)
-        # shape: (B, T, E)
-        user_info = tf.tile(user_info, [1, seq_len, 1])
-
-        # context info
-        # shape: (B, E)
-        context_info = tf.expand_dims(context_info, axis=1)
-        # shape: (B, T, E)
-        context_info = tf.tile(context_info, [1, seq_len, 1])
+        items = self.items_emb(features, training=training)
+        user_profile = self.user_profile_emb(features, training=training)
+        user_behavior = self.user_behavior_emb(features, training=training)
+        context = self.context_emb(features, training=training)
 
         # user interest info
         # shape: (B, T, E)
-        interest_info = self.din([behavior_info[0], items_info[0]], training=training)
-        # shape: (B, T, E)
-        outputs = tf.concat([user_info, context_info, interest_info, items_info[0]], axis=-1)
+        personal_rep = self.din([user_behavior[0], items[0], user_profile, context], training=training)
+        # shape: (B, T, 32)
+        inputs = self.mlp_emb(tf.concat([personal_rep, items[0]], axis=-1), training=training)
 
         # do self-attention
-        outputs = self.transformer([outputs, items_info[1]], training=training)
+        outputs = self.transformer([inputs, items[1]], training=training)
 
         # do mlp transformation
         outputs = self.mlp(outputs, training=training)
 
         # logits (B, T, 1), input_seq_mask (B, T)
-        return [outputs, tf.sequence_mask(items_info[1])]
+        return [outputs, tf.sequence_mask(items[1])]
