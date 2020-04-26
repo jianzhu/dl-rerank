@@ -10,12 +10,12 @@ Given item list needed for ranking, we use DIN (deep interest network) modeling 
 > [SRU](https://arxiv.org/abs/1709.02755): Simple Recurrent Units for Highly Parallelizable Recurrence <br />
 
 #### Item Modeling Strategy
-After modeling user interest, given item targeted user vectorized representation and item list vectorized representation, and item click or not click label info. To precisely model (personalized user representation, item representation, context, label) relation, we need to consider item list info, with this info, we can compute each (personalized user representation, item representation)'s precise vectorized representation. Considering the computation budget we can select between ConvSeq2Seq or Transformer to do self-attention, maybe we could use them to do user interest modeling also.
+After modeling user interest, given item targeted user vectorized representation and item list vectorized representation, and item click or not click label info. To precisely model (personalized user representation, item representation, context, label) relation, we need to consider item list info, with this info, we can compute each (personalized user representation, item representation)'s precise vectorized representation. Considering the computation budget we can apply dense tranformation before apply Transformer to do self-attention. We could use transformer to do user interest modeling also (BST).
 
 **Reference**
->[ConvSeq2Seq](https://arxiv.org/abs/1705.03122): Convolutional Sequence to Sequence Learning <br />
 >[Transformer](https://arxiv.org/abs/1706.03762): Attention Is All You Need <br />
->[PRM-Rerank](https://arxiv.org/abs/1904.06813):Personalized Re-ranking for Recommendation <br />
+>[PRM-Rerank](https://arxiv.org/abs/1904.06813): Personalized Re-ranking for Recommendation <br />
+>[BST](https://arxiv.org/abs/1905.06874): Behavior Sequence Transformer for E-commerce Recommendation in Alibaba <br />
 
 #### Engineering Related
 > **Embedding**: support share embedding <br />
