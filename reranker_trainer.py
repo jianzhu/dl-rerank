@@ -51,6 +51,7 @@ def performance_optimize():
 
 def main(_):
     tf.compat.v1.disable_eager_execution()
+    #tf.debugging.enable_check_numerics()
 
     performance_optimize()
 
