@@ -31,7 +31,7 @@ class DataLoader(object):
         files = files.shard(shard_num, shard_id)
         print_op = tf.print("shard num: {}, shard_id: {}".format(shard_num, shard_id))
         with tf.control_dependencies([print_op]):
-            return files.flat_map(lambda tf_file: self.load_file(tf_file, batch_size))
+            return files.interleave(lambda tf_file: self.load_file(tf_file, batch_size), num_parallel_calls=8)
 
     def load_file(self, tf_file, batch_size):
         print_op = tf.print("opening file: ", tf_file)
