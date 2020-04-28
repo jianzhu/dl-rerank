@@ -21,5 +21,5 @@ After modeling user interest, given item targeted user vectorized representation
 > **Embedding**: support share embedding <br />
 > **MBA**: support mini-batch aware regularization for sparse categorical feature <br />
 > **XLA**: support xla <br />
-> **Mixed Precision**: support mixed precision <br />
+> **Mixed Precision**: support mixed precision, **this feature can only be used with tf >=2.2.0** <br />
 > **Distributed Training**: support parameter-server distributed training strategy <br />

@@ -35,6 +35,7 @@ def model_fn(features, labels, mode, params):
     lr_schedule = tf.keras.optimizers.schedules.ExponentialDecay(
         FLAGS.learning_rate, decay_steps=FLAGS.decay_steps, decay_rate=FLAGS.decay_rate, staircase=True)
     optimizer = tfa.optimizers.LazyAdam(lr_schedule)
+    optimizer.iterations = tf.compat.v1.train.get_or_create_global_step()
     if FLAGS.use_float16:
         optimizer = tf.keras.mixed_precision.experimental.LossScaleOptimizer(
             optimizer, loss_scale='dynamic')
@@ -68,7 +69,6 @@ def model_fn(features, labels, mode, params):
     else:
         gradients = tape.gradient(loss, trainable_variables)
     optimize = optimizer.apply_gradients(zip(gradients, trainable_variables))
-    global_step = tf.compat.v1.train.get_or_create_global_step()
-    update_global_step = tf.compat.v1.assign(global_step, global_step + 1, name='update_global_step')
-    train_op = tf.group([optimize, update_global_step])
+    update_ops = tf.compat.v1.get_collection(tf.compat.v1.GraphKeys.UPDATE_OPS)
+    train_op = tf.group([optimize, update_ops])
     return tf.estimator.EstimatorSpec(mode, loss=loss, train_op=train_op)
