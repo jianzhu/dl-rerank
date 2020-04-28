@@ -13,6 +13,7 @@ flags.DEFINE_string('train_dir', '', 'where to store train dataset')
 flags.DEFINE_integer('train_part_num', 3, 'train file partition num')
 flags.DEFINE_string('eval_dir', '', 'where to store eval dataset')
 flags.DEFINE_string('config_dir', '', 'feature config dir')
+flags.DEFINE_integer('seq_len', 30, 'sequence length')
 
 
 def create_int_feature(values):
@@ -39,7 +40,6 @@ def gen_user_feature(features, configs):
 
 def gen_behavior_feature(features, configs):
     # visited goods id & shop id & cate id list
-    seq_len = random.randint(1, 4)
     feature_info = [
         ('user.visited_goods_ids', configs['user.visited_goods_ids']['vocab_size']),
         ('user.visited_shop_ids', configs['user.visited_shop_ids']['vocab_size']),
@@ -49,12 +49,12 @@ def gen_behavior_feature(features, configs):
 
     for feature, upb in feature_info:
         seq = []
-        for _ in range(seq_len):
+        for _ in range(FLAGS.seq_len):
             seq.append(random.randint(1, upb))
         features[feature] = create_int_feature(seq)
 
 
-def gen_ads_feature(features, configs, seq_len=5):
+def gen_items_feature(features, configs):
     feature_info = [
         ('item.goods_ids', configs['item.goods_ids']['vocab_size']),
         ('item.shop_ids', configs['item.shop_ids']['vocab_size']),
@@ -64,7 +64,7 @@ def gen_ads_feature(features, configs, seq_len=5):
 
     for feature, upb in feature_info:
         seq = []
-        for _ in range(seq_len):
+        for _ in range(FLAGS.seq_len):
             seq.append(random.randint(1, upb))
         features[feature] = create_int_feature(seq)
 
@@ -78,9 +78,9 @@ def gen_context_feature(features, configs):
         features[feature] = create_int_feature([random.randint(1, upb)])
 
 
-def gen_label(features, seq_len=5):
+def gen_label(features):
     seq = []
-    for _ in range(seq_len):
+    for _ in range(FLAGS.seq_len):
         seq.append(random.randint(0, 1))
     features["label"] = create_int_feature(seq)
 
@@ -92,7 +92,7 @@ def gen_tfrecord_file(file_name, record_num, configs):
         features = collections.OrderedDict()
         gen_user_feature(features, configs)
         gen_behavior_feature(features, configs)
-        gen_ads_feature(features, configs)
+        gen_items_feature(features, configs)
         gen_context_feature(features, configs)
         gen_label(features)
         # write example

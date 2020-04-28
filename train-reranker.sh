@@ -1,5 +1,13 @@
 #!/usr/bin/env bash
 
+# prepare vocab
+python prepare_vocab.py --config_dir=resources/config/feature_column --vocab_dir=resources/vocab/
+
+# prepare train/eval data
+python prepare_dataset.py --train_dir=resources/train --eval_dir=resources/eval --config_dir=resources/config/feature_column --train_part_num=10
+
+
+# start rerank model training
 if [[ ! -d "logs" ]]
 then
     mkdir logs

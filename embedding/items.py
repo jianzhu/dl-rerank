@@ -34,7 +34,7 @@ class ItemsEmbedding(tf.keras.layers.Layer):
             self.mlp_dense2 = tf.keras.layers.Dense(128, activation='relu')
             self.mlp_bn3 = tf.keras.layers.BatchNormalization(epsilon=1e-6)
             self.mlp_drop3 = tf.keras.layers.Dropout(rate=rate)
-            self.mlp_dense3 = tf.keras.layers.Dense(FLAGS.item_emb_size, activation='relu')
+            self.mlp_dense3 = tf.keras.layers.Dense(FLAGS.hidden_size, activation='relu')
 
     def mlp(self, inputs, training=False):
         x = self.mlp_bn1(inputs, training=training)

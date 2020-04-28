@@ -1,52 +1,52 @@
 [
   {
-    "dim": 3,
+    "dim": 2,
     "features": [
       "user.gender"
     ]
   },
   {
-    "dim": 3,
+    "dim": 4,
     "features": [
       "user.age_level"
     ]
   },
   {
-    "dim": 3,
+    "dim": 64,
     "features": [
       "user.visited_goods_ids",
       "item.goods_ids"
     ]
   },
   {
-    "dim": 3,
+    "dim": 32,
     "features": [
       "user.visited_shop_ids",
        "item.shop_ids"
     ]
   },
   {
-    "dim": 3,
+    "dim": 16,
     "features": [
       "user.visited_cate_ids",
       "item.cate_ids"
     ]
   },
   {
-    "dim": 3,
+    "dim": 8,
     "features": [
       "user.visited_goods_prices",
       "item.goods_prices"
     ]
   },
   {
-    "dim": 3,
+    "dim": 4,
     "features": [
       "context.hour"
     ]
   },
   {
-    "dim": 3,
+    "dim": 8,
     "features": [
       "context.phone"
     ]

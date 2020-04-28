@@ -3,21 +3,21 @@
     "default": 0,
     "type": "sequence_categorical",
     "vocab": "goods_id.txt",
-    "vocab_size": 100
+    "vocab_size": 1000000
   },
 
   "user.visited_shop_ids": {
     "default": 0,
     "type": "sequence_categorical",
     "vocab": "shop_id.txt",
-    "vocab_size": 100
+    "vocab_size": 10000
   },
 
   "user.visited_cate_ids": {
     "default": 0,
     "type": "sequence_categorical",
     "vocab": "cate_id.txt",
-    "vocab_size": 100
+    "vocab_size": 1000
   },
 
   "user.visited_goods_prices": {

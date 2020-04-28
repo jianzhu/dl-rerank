@@ -12,6 +12,7 @@ from modeling.attentions.transformer import Transformer
 
 FLAGS = flags.FLAGS
 
+
 class PRM(tf.keras.layers.Layer):
     """ Personalized ReRanker
 
