@@ -74,9 +74,9 @@ class LightConv(tf.keras.layers.Layer):
     def call(self, inputs, training=False):
         """inputs contains following two tensor
 
-                   input tensor: shape (B, T, H)
-                   input sequence length tensor: shape (B,)
-                """
+           input tensor: shape (B, T, H)
+           input sequence length tensor: shape (B,)
+        """
         output_tensor = inputs[0]
         for attention_block in self.attention_blocks:
             output_tensor = attention_block(output_tensor, training=training)
