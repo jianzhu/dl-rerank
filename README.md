@@ -21,7 +21,7 @@ Convolutional kernel give us another path to do self attention, we can finish th
 >[PRM-Rerank](https://arxiv.org/abs/1904.06813): Personalized Re-ranking for Recommendation <br />
 >[BST](https://arxiv.org/abs/1905.06874): Behavior Sequence Transformer for E-commerce Recommendation in Alibaba <br />
 >[ConvSeq2Seq](https://arxiv.org/abs/1705.03122): Convolutional Sequence to Sequence Learning <br />
->[LightConv](https://arxiv.org/pdf/1901.10430.pdf): Pay Less Attention wity Light Weight and Dynamic Convolutions <br />
+>[LightConv](https://arxiv.org/abs/1901.10430): Pay Less Attention wity Light Weight and Dynamic Convolutions <br />
 >[LSRA](https://arxiv.org/abs/2004.11886): Lite Transformer with Long-Short Range Attention
 
 #### Engineering Related
