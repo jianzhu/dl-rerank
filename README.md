@@ -14,7 +14,7 @@ After modeling user interest, given item targeted user vectorized representation
 
 With item list info, we can compute each (personalized user representation, item representation)'s precise vectorized representation. Considering the computation budget we can apply dense tranformation before apply Transformer to do self-attention. We could use transformer to do user interest modeling also (BST).
 
-Convolutional kernel give us another path to do self attention, we can finish this with Convolution, or Light Convolution, or use Transformer and Light Convolution together which named by Long-Short Range Attention.
+Convolutional kernel give us another path to do self attention, we can finish this with Convolution, or Light Weight Convolution, or use Transformer and Light Convolution together which named by Long-Short Range Attention.
 
 **Reference**
 >[Transformer](https://arxiv.org/abs/1706.03762): Attention Is All You Need <br />
