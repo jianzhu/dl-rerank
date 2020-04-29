@@ -10,17 +10,7 @@ FLAGS = flags.FLAGS
 
 def model_fn(features, labels, mode, params):
     feature_config = params['feature_config']
-    dropout_rate = params['dropout_rate']
-    layer_num = params['layer_num']
-    head_num = params['head_num']
-    hidden_size = params['hidden_size']
-    filter_size = params['filter_size']
-    pbm_reranker = PRM(feature_config,
-                       layer_num=layer_num,
-                       head_num=head_num,
-                       hidden_size=hidden_size,
-                       filter_size=filter_size,
-                       dropout_rate=dropout_rate)
+    pbm_reranker = PRM(feature_config)
 
     training = (mode == tf.estimator.ModeKeys.TRAIN)
 

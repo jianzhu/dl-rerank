@@ -31,6 +31,8 @@ flags.DEFINE_integer('layer_num', 3, 'transformer layer num')
 flags.DEFINE_integer('head_num', 4, 'transformer head num')
 flags.DEFINE_integer('hidden_size', 256, 'transformer ffn filter size')
 flags.DEFINE_integer('filter_size', 1024, 'transformer ffn filter size')
+flags.DEFINE_string('self_att_type', 'transformer', 'self attention type: (transformer|light_conv)')
+flags.DEFINE_integer('kernel_size', 3, 'light convolution kernel size')
 
 # performance flags
 flags.DEFINE_bool('enable_xla', True, 'enable xla')
@@ -70,11 +72,6 @@ def main(_):
     estimator = tf.estimator.Estimator(
         model_fn=model_fn.model_fn, config=run_config, params={
             'feature_config': feature_config,
-            'dropout_rate': FLAGS.dropout_rate,
-            'layer_num': FLAGS.layer_num,
-            'head_num': FLAGS.head_num,
-            'hidden_size': FLAGS.hidden_size,
-            'filter_size': FLAGS.filter_size
         })
 
     tf.estimator.train_and_evaluate(estimator, train_spec, eval_spec)
