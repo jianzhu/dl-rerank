@@ -38,3 +38,14 @@ hidden_size=256, kernel_size=3, batch_size=256, layer_num=3, filter_size=1024 <b
 > **XLA**: support xla <br />
 > **Mixed Precision**: support mixed precision, **this feature can only be used with tf >=2.2.0** <br />
 > **Distributed Training**: support parameter-server distributed training strategy <br />
+
+### To do
+**Multi-task learning (MMoE)** <br />
+1) Modeling task relationships in multi-task learning with multi-gate mixture-of-experts <br />
+2) Recommending What Video to Watch Next: A Multitask Ranking System
+  
+**Position Bias Modeling** <br />
+1) Recommending What Video to Watch Next: A Multitask Ranking System
+
+**Ranking Position Modeling** <br />
+1) Personalized Re-ranking for Recommendation
