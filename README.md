@@ -18,6 +18,7 @@ Convolutional kernel give us another path to do self attention, we can finish th
 
 **Performance**<br />
 hidden_size=256, kernel_size=3, batch_size=256, layer_num=3, filter_size=1024 <br />
+hardware: (os) macos 10.13.4; (cpu) core i7 2.3 GHZ; (mem) 16GB <br />
 
 | transformer   |      flatten transformer      |  lite transformer |  light conv    |
 |---------------|:-----------------------------:|:-----------------:|:--------------:|
