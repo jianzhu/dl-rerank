@@ -16,6 +16,14 @@ With item list info, we can compute each (personalized user representation, item
 
 Convolutional kernel give us another path to do self attention, we can finish this with Convolution, or Light Weight Convolution, or use Transformer and Light Convolution together which named by Long-Short Range Attention.
 
+**Performance**<br />
+hidden_size=256, kernel_size=3, batch_size=256, layer_num=3, filter_size=1024 <br />
+
+| transformer   |      flatten transformer      |  lite transformer |  light conv    |
+|---------------|:-----------------------------:|:-----------------:|:--------------:|
+| 13.8ms/sample |         11.9ms/sample         |    11.5ms/sample  |  10ms/sample   |
+
+
 **Reference**
 >[Transformer](https://arxiv.org/abs/1706.03762): Attention Is All You Need <br />
 >[PRM-Rerank](https://arxiv.org/abs/1904.06813): Personalized Re-ranking for Recommendation <br />

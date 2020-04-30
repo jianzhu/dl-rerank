@@ -10,6 +10,7 @@ from embedding.context import ContextEmbedding
 from modeling.attentions.din import DIN
 from modeling.attentions.transformer import Transformer
 from modeling.attentions.light_conv import LightConv
+from modeling.attentions.lite_transformer import LiteTransformer
 
 FLAGS = flags.FLAGS
 
@@ -46,6 +47,15 @@ class PRM(tf.keras.layers.Layer):
             self.self_attention = LightConv(layer_num=FLAGS.layer_num,
                                             dropout_rate=FLAGS.dropout_rate,
                                             kernel_size=FLAGS.kernel_size)
+        elif FLAGS.self_att_type == 'lite_transformer':
+            self.self_attention = LiteTransformer(layer_num=FLAGS.layer_num,
+                                                  head_num=FLAGS.head_num,
+                                                  hidden_size=FLAGS.hidden_size,
+                                                  filter_size=FLAGS.filter_size,
+                                                  kernel_size=FLAGS.kernel_size,
+                                                  dropout_rate=FLAGS.dropout_rate)
+        else:
+            raise ValueError('invalid attention type: %s' % FLAGS.self_att_type)
 
         # embedding mlp transformation
         self.mlp_emb_bn1 = tf.keras.layers.BatchNormalization(epsilon=1e-6)
