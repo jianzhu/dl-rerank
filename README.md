@@ -31,8 +31,8 @@ hardware: (os) macos 10.13.4; (cpu) core i7 2.3 GHZ; (mem) 16GB <br />
 >[BST](https://arxiv.org/abs/1905.06874): Behavior Sequence Transformer for E-commerce Recommendation in Alibaba <br />
 >[ConvSeq2Seq](https://arxiv.org/abs/1705.03122): Convolutional Sequence to Sequence Learning <br />
 >[LightConv](https://arxiv.org/abs/1901.10430): Pay Less Attention wity Light Weight and Dynamic Convolutions <br />
->[LSRA](https://arxiv.org/abs/2004.11886): Lite Transformer with Long-Short Range Attention
->[GLU](https://arxiv.org/abs/2002.05202): GLU Variants Improve Transformer
+>[LSRA](https://arxiv.org/abs/2004.11886): Lite Transformer with Long-Short Range Attention <br />
+>[GLU](https://arxiv.org/abs/2002.05202): GLU Variants Improve Transformer <br />
 
 #### Engineering Related
 > **Embedding**: support share embedding <br />
