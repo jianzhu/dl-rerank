@@ -42,9 +42,11 @@ hardware: (os) macos 10.13.4; (cpu) core i7 2.3 GHZ; (mem) 16GB <br />
 
 ### To do
 **Multi-task learning (MMoE)** <br />
-1) Modeling task relationships in multi-task learning with multi-gate mixture-of-experts <br />
-2) Recommending What Video to Watch Next: A Multitask Ranking System
-  
+1) An Overview of Multi-Task Learning in Deep Neural Networks
+2) Modeling task relationships in multi-task learning with multi-gate mixture-of-experts <br />
+3) Recommending What Video to Watch Next: A Multitask Ranking System
+4) SNR: Sub-Network Routing for Flexible Parameter Sharing in Multi-Task Learning
+
 **Position Bias Modeling** <br />
 1) Recommending What Video to Watch Next: A Multitask Ranking System
 
