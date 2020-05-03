@@ -52,3 +52,6 @@ hardware: (os) macos 10.13.4; (cpu) core i7 2.3 GHZ; (mem) 16GB <br />
 
 **Ranking Position Modeling** <br />
 1) Personalized Re-ranking for Recommendation
+
+**Model Distillation** <br />
+1) Ranking Distillation- Learning Compact Ranking Models With High Performance for Recommender System
