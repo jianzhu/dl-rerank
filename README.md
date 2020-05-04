@@ -39,6 +39,9 @@ When developing a complicated machine learning application system, we need to co
 
 There exists two type of multi-task learning: hard parameter sharing, soft parameter sharing. Here we use MMoE2, which is a soft parameter sharing method, and considering we use transformer to modeling inter-item relation, transformer is computation very costly, we use transformer as shared bottom layer, this architecture has also been tested by MT-DNN.  <br />
 
+For regression objectives, such as dwell time, considering its range isn't between 0 and 1, we have two methods to cope with it: <br />
+1) do log10 transformation on dwell time, then norm it with min-max normalization <br />
+2) bucketize dwell time, and transform regression problem to classification problem, and use predicted probabilities as class weight, and compute class's weighted sum value, take this value as the final result, then normalize it with the largest bucket's class. This method somehow similarly to McRank <br />
 
 **Reference**
 > [Survey](https://arxiv.org/abs/1706.05098): An Overview of Multi-Task Learning in Deep Neural Networks <br />
@@ -46,7 +49,7 @@ There exists two type of multi-task learning: hard parameter sharing, soft param
 > [MMoE2](https://dl.acm.org/doi/10.1145/3298689.3346997): Recommending What Video to Watch Next: A Multitask Ranking System <br />
 > [SNR](https://research.google/pubs/pub47842/): Sub-Network Routing for Flexible Parameter Sharing in Multi-Task Learning <br />
 > [MT-DNN](https://arxiv.org/abs/1901.11504): Multi-Task Deep Neural Networks for Natural Language Understanding <br />
-
+> [McRank](https://papers.nips.cc/paper/3270-mcrank-learning-to-rank-using-multiple-classification-and-gradient-boosting.pdf): McRank: Learning to Rank Using Multiple Classification and Gradient Boosting
 
 #### Engineering Related
 > **Embedding**: support share embedding <br />
