@@ -35,7 +35,7 @@ hardware: (os) macos 10.13.4; (cpu) core i7 2.3 GHZ; (mem) 16GB <br />
 >[GLU](https://arxiv.org/abs/2002.05202): GLU Variants Improve Transformer <br />
 
 #### Multi-task learning
-When developing a complicated machine learning application system, we need to consider multiple objectives, such as: ctr, cvr, dwell time, add basket etc. Multi-task learning give us a solution to simultaneously learn multiple objectives.  <br />
+When developing a complicated machine learning application system, we need to consider multiple objectives, such as: click, dwell time, add basket, buy etc. Multi-task learning give us a solution to simultaneously learn multiple objectives.  <br />
 
 There exists two type of multi-task learning: hard parameter sharing, soft parameter sharing. Here we use MMoE2, which is a soft parameter sharing method, and considering we use transformer to modeling inter-item relation, transformer is computation very costly, we use transformer as shared bottom layer, this architecture has also been tested by MT-DNN.  <br />
 

@@ -1,0 +1,38 @@
+{
+  "expert": [
+    {
+      "layer_units": 64,
+      "activation": "relu"
+    },
+    {
+      "layer_units": 32,
+      "activation": "relu"
+    }
+  ],
+  "tasks": [
+    {
+      "type": "classification",
+      "units": 1,
+      "weight": 0.5,
+      "name": "click"
+    },
+    {
+      "type": "regression",
+      "units": 1,
+      "weight": 0.2,
+      "name": "dwell_time"
+    },
+    {
+      "type": "classification",
+      "units": 1,
+      "weight": 0.2,
+      "name": "add_basket"
+    },
+    {
+      "type": "classification",
+      "units": 1,
+      "weight": 0.1,
+      "name": "buy"
+    }
+  ]
+}

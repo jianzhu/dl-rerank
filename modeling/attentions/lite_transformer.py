@@ -55,8 +55,11 @@ class LiteTransformer(tf.keras.layers.Layer):
     def call(self, inputs, training=False):
         """inputs contains following two tensor
 
-           input tensor: shape (B, T, H)
-           input sequence length tensor: shape (B,)
+           input:
+               input tensor: shape (B, T, H)
+               input sequence length tensor: shape (B,)
+           output:
+               output tensor: shape (B, T, H)
         """
         output_tensor = inputs[0]
         sequence_len = inputs[1]

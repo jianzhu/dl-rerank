@@ -78,11 +78,32 @@ def gen_context_feature(features, configs):
         features[feature] = create_int_feature([random.randint(1, upb)])
 
 
-def gen_label(features):
+def gen_click_label(features):
     seq = []
     for _ in range(FLAGS.seq_len):
         seq.append(random.randint(0, 1))
-    features["label"] = create_int_feature(seq)
+    features["label_ctr"] = create_int_feature(seq)
+
+
+def gen_dwell_time_label(features):
+    seq = []
+    for _ in range(FLAGS.seq_len):
+        seq.append(random.randint(0, 200))
+    features["label_dwell_time"] = create_int_feature(seq)
+
+
+def gen_add_basket_label(features):
+    seq = []
+    for _ in range(FLAGS.seq_len):
+        seq.append(random.randint(0, 1))
+    features["label_add_basket"] = create_int_feature(seq)
+
+
+def gen_buy_label(features):
+    seq = []
+    for _ in range(FLAGS.seq_len):
+        seq.append(random.randint(0, 1))
+    features["label_buy"] = create_int_feature(seq)
 
 
 def gen_tfrecord_file(file_name, record_num, configs):
@@ -94,7 +115,10 @@ def gen_tfrecord_file(file_name, record_num, configs):
         gen_behavior_feature(features, configs)
         gen_items_feature(features, configs)
         gen_context_feature(features, configs)
-        gen_label(features)
+        gen_click_label(features)
+        gen_dwell_time_label(features)
+        gen_add_basket_label(features)
+        gen_buy_label(features)
         # write example
         example = tf.train.Example(features=tf.train.Features(feature=features))
         writer.write(example.SerializeToString())
