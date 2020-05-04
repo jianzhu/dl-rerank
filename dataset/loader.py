@@ -2,7 +2,6 @@ import os
 
 import tensorflow as tf
 
-from absl import logging
 from tensorflow import feature_column as fc
 
 from utils import shard_info
@@ -46,5 +45,7 @@ class DataLoader(object):
 
     def parse_example(self, serialized, columns):
         features = tf.io.parse_example(serialized=serialized, features=columns)
-        labels = tf.expand_dims(tf.sparse.to_dense(features.pop('label')), axis=-1)
+        labels = (tf.expand_dims(tf.sparse.to_dense(features.pop('click')), axis=-1),
+                  tf.expand_dims(tf.sparse.to_dense(features.pop('add_basket')), axis=-1),
+                  tf.expand_dims(tf.sparse.to_dense(features.pop('buy')), axis=-1))
         return features, labels

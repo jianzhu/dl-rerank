@@ -82,28 +82,21 @@ def gen_click_label(features):
     seq = []
     for _ in range(FLAGS.seq_len):
         seq.append(random.randint(0, 1))
-    features["label_ctr"] = create_int_feature(seq)
-
-
-def gen_dwell_time_label(features):
-    seq = []
-    for _ in range(FLAGS.seq_len):
-        seq.append(random.randint(0, 200))
-    features["label_dwell_time"] = create_int_feature(seq)
+    features["click"] = create_int_feature(seq)
 
 
 def gen_add_basket_label(features):
     seq = []
     for _ in range(FLAGS.seq_len):
         seq.append(random.randint(0, 1))
-    features["label_add_basket"] = create_int_feature(seq)
+    features["add_basket"] = create_int_feature(seq)
 
 
 def gen_buy_label(features):
     seq = []
     for _ in range(FLAGS.seq_len):
         seq.append(random.randint(0, 1))
-    features["label_buy"] = create_int_feature(seq)
+    features["buy"] = create_int_feature(seq)
 
 
 def gen_tfrecord_file(file_name, record_num, configs):
@@ -116,7 +109,6 @@ def gen_tfrecord_file(file_name, record_num, configs):
         gen_items_feature(features, configs)
         gen_context_feature(features, configs)
         gen_click_label(features)
-        gen_dwell_time_label(features)
         gen_add_basket_label(features)
         gen_buy_label(features)
         # write example

@@ -14,11 +14,11 @@ def model_fn(features, labels, mode, params):
 
     training = (mode == tf.estimator.ModeKeys.TRAIN)
 
+    inputs = [features, labels]
     if mode == tf.estimator.ModeKeys.PREDICT:
-        outputs = pbm_reranker(features, training)
-        prediction = tf.nn.sigmoid(outputs[0])
+        tasks_predictions, tasks_loss, total_loss = pbm_reranker(inputs, training)
         predictions = {
-            'prediction': prediction,
+            'prediction': tasks_predictions['predictions'],
         }
         return tf.estimator.EstimatorSpec(mode, predictions=predictions)
 
@@ -31,23 +31,23 @@ def model_fn(features, labels, mode, params):
             optimizer, loss_scale='dynamic')
 
     with tf.GradientTape() as tape:
-        outputs = pbm_reranker(features, training)
-        # (B, T, 1)
-        logits = outputs[0]
-        # (B, T)
-        weights = tf.expand_dims(tf.cast(outputs[1], dtype=logits.dtype), axis=-1)
-        prediction = tf.nn.sigmoid(logits)
-        loss = tf.compat.v1.losses.log_loss(labels, prediction, weights)
+        tasks_predictions, tasks_loss, total_loss = pbm_reranker(inputs, training)
+        loss = total_loss
         # add mba l2 reg loss created during forward pass
-        #tf.print(pbm_reranker.losses)
         loss += sum(pbm_reranker.losses)
         if FLAGS.use_float16:
             scaled_loss = optimizer.get_scaled_loss(loss)
 
     metrics = {
-        'auc': tf.compat.v1.metrics.auc(labels, prediction),
-        'label/mean': tf.compat.v1.metrics.mean(labels),
-        'prediction/mean': tf.compat.v1.metrics.mean(prediction)
+        'click_auc': tf.compat.v1.metrics.auc(labels[0], tasks_predictions['click']),
+        'click_label/mean': tf.compat.v1.metrics.mean(labels[0]),
+        'click_prediction/mean': tf.compat.v1.metrics.mean(tasks_predictions['click']),
+        'add_basket_auc': tf.compat.v1.metrics.auc(labels[1], tasks_predictions['add_basket']),
+        'add_basket_label/mean': tf.compat.v1.metrics.mean(labels[1]),
+        'add_basket_prediction/mean': tf.compat.v1.metrics.mean(tasks_predictions['add_basket']),
+        'buy_auc': tf.compat.v1.metrics.auc(labels[2], tasks_predictions['buy']),
+        'buy_label/mean': tf.compat.v1.metrics.mean(labels[2]),
+        'buy_prediction/mean': tf.compat.v1.metrics.mean(tasks_predictions['buy']),
     }
     if mode == tf.estimator.ModeKeys.EVAL:
         return tf.estimator.EstimatorSpec(mode, loss=loss, eval_metric_ops=metrics)

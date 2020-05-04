@@ -101,7 +101,11 @@ class FeatureConfig(object):
                 feature_columns[feature] = fc
 
         # add label column
-        key = 'label'
+        key = 'click'
+        feature_columns[key] = tf.feature_column.sequence_numeric_column(key=key, dtype=tf.int64)
+        key = 'add_basket'
+        feature_columns[key] = tf.feature_column.sequence_numeric_column(key=key, dtype=tf.int64)
+        key = 'buy'
         feature_columns[key] = tf.feature_column.sequence_numeric_column(key=key, dtype=tf.int64)
         return feature_columns
 

@@ -11,6 +11,7 @@ from modeling.attentions.din import DIN
 from modeling.attentions.transformer import Transformer
 from modeling.attentions.light_conv import LightConv
 from modeling.attentions.lite_transformer import LiteTransformer
+from modeling.mtl.tasks import Tasks
 
 FLAGS = flags.FLAGS
 
@@ -65,16 +66,8 @@ class PRM(tf.keras.layers.Layer):
         self.mlp_emb_drop2 = tf.keras.layers.Dropout(rate=FLAGS.dropout_rate)
         self.mlp_emb_dense2 = tf.keras.layers.Dense(FLAGS.hidden_size)
 
-        # output mlp transformation
-        self.mlp_bn1 = tf.keras.layers.BatchNormalization(epsilon=1e-6)
-        self.mlp_drop1 = tf.keras.layers.Dropout(rate=FLAGS.dropout_rate)
-        self.mlp_dense1 = tf.keras.layers.Dense(units=200, activation='relu')
-        self.mlp_bn2 = tf.keras.layers.BatchNormalization(epsilon=1e-6)
-        self.mlp_drop2 = tf.keras.layers.Dropout(rate=FLAGS.dropout_rate)
-        self.mlp_dense2 = tf.keras.layers.Dense(units=80, activation='relu')
-        self.mlp_bn3 = tf.keras.layers.BatchNormalization(epsilon=1e-6)
-        self.mlp_drop3 = tf.keras.layers.Dropout(rate=FLAGS.dropout_rate)
-        self.mlp_dense3 = tf.keras.layers.Dense(units=1)
+        # multi-task learning
+        self.tasks = Tasks(FLAGS.config_dir, FLAGS.dropout_rate, FLAGS.gate_dropout_rate)
 
     def mlp_emb(self, inputs, training=False):
         outputs = self.mlp_emb_bn1(inputs, training=training)
@@ -84,19 +77,10 @@ class PRM(tf.keras.layers.Layer):
         outputs = self.mlp_emb_drop2(outputs, training=training)
         return self.mlp_emb_dense2(outputs, training=training)
 
-    def mlp(self, outputs, training=False):
-        outputs = self.mlp_bn1(outputs, training=training)
-        outputs = self.mlp_drop1(outputs, training=training)
-        outputs = self.mlp_dense1(outputs, training=training)
-        outputs = self.mlp_bn2(outputs, training=training)
-        outputs = self.mlp_drop2(outputs, training=training)
-        outputs = self.mlp_dense2(outputs, training=training)
-        outputs = self.mlp_bn3(outputs, training=training)
-        outputs = self.mlp_drop3(outputs, training=training)
-        outputs = self.mlp_dense3(outputs, training=training)
-        return outputs
+    def call(self, inputs, training=False):
+        features = inputs[0]
+        labels = inputs[1]
 
-    def call(self, features, training=False):
         items = self.items_emb(features, training=training)
         user_profile = self.user_profile_emb(features, training=training)
         user_behavior = self.user_behavior_emb(features, training=training)
@@ -109,10 +93,8 @@ class PRM(tf.keras.layers.Layer):
         inputs = self.mlp_emb(tf.concat([personal_rep, items[0]], axis=-1), training=training)
 
         # do self-attention
-        outputs = self.self_attention([inputs, items[1]], training=training)
+        shared_bottom = self.self_attention([inputs, items[1]], training=training)
 
-        # do mlp transformation
-        outputs = self.mlp(outputs, training=training)
-
-        # logits (B, T, 1), input_seq_mask (B, T)
-        return [outputs, tf.sequence_mask(items[1])]
+        # do multi-task learning
+        inputs = [shared_bottom, tf.sequence_mask(items[1]), labels]
+        return self.tasks(inputs)
