@@ -41,11 +41,11 @@ There exists two type of multi-task learning: hard parameter sharing, soft param
 
 
 **Reference**
-> [Survey](): An Overview of Multi-Task Learning in Deep Neural Networks <br />
-> [MMoE](): Modeling task relationships in multi-task learning with multi-gate mixture-of-experts <br />
-> [MMoE2](): Recommending What Video to Watch Next: A Multitask Ranking System <br />
-> [SNR](): Sub-Network Routing for Flexible Parameter Sharing in Multi-Task Learning <br />
-> [MT-DNN](): Multi-Task Deep Neural Networks for Natural Language Understanding <br />
+> [Survey](https://arxiv.org/abs/1706.05098): An Overview of Multi-Task Learning in Deep Neural Networks <br />
+> [MMoE](https://dl.acm.org/doi/10.1145/3219819.3220007): Modeling task relationships in multi-task learning with multi-gate mixture-of-experts <br />
+> [MMoE2](https://dl.acm.org/doi/10.1145/3298689.3346997): Recommending What Video to Watch Next: A Multitask Ranking System <br />
+> [SNR](https://research.google/pubs/pub47842/): Sub-Network Routing for Flexible Parameter Sharing in Multi-Task Learning <br />
+> [MT-DNN](https://arxiv.org/abs/1901.11504): Multi-Task Deep Neural Networks for Natural Language Understanding <br />
 
 
 #### Engineering Related
