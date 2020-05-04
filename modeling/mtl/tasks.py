@@ -98,26 +98,3 @@ class Tasks(tf.keras.layers.Layer):
                 raise ValueError("Invalid task ouput units: {}".format(units))
             self.tasks.append({'dense': tf.keras.layers.Dense(units=units, activation='sigmoid'),
                                 'weight': task['weight'], 'name': task['name']})
-
-
-# import numpy as np
-#
-# config_dir = '/Users/zhujian/Work/Compute/dl-rerank/resources/config'
-# tasks = Tasks(config_dir, 0.3, 0.1)
-#
-# shared_bottom = np.random.rand(2, 3, 4)
-# sequence_mask = tf.sequence_mask(tf.constant([2, 3], dtype=tf.int64))
-# labels = [np.random.randint(2, size=(2, 3, 1)),
-#           np.random.randint(2, size=(2, 3, 1)),
-#           np.random.randint(2, size=(2, 3, 1))]
-#
-# inputs = [shared_bottom, sequence_mask, labels]
-#
-# tasks_predictions, tasks_loss, total_loss = tasks(inputs)
-# print('-------------task predictions----------------')
-# print(tasks_predictions)
-#
-# print('---------------task loss-----------------')
-# print(tasks_loss)
-#
-# print('total loss: {}'.format(total_loss))
