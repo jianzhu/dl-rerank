@@ -30,9 +30,23 @@ hardware: (os) macos 10.13.4; (cpu) core i7 2.3 GHZ; (mem) 16GB <br />
 >[PRM-Rerank](https://arxiv.org/abs/1904.06813): Personalized Re-ranking for Recommendation <br />
 >[BST](https://arxiv.org/abs/1905.06874): Behavior Sequence Transformer for E-commerce Recommendation in Alibaba <br />
 >[ConvSeq2Seq](https://arxiv.org/abs/1705.03122): Convolutional Sequence to Sequence Learning <br />
->[LightConv](https://arxiv.org/abs/1901.10430): Pay Less Attention wity Light Weight and Dynamic Convolutions <br />
+>[LightConv](https://arxiv.org/abs/1901.10430): Pay Less Attention with Light Weight and Dynamic Convolutions <br />
 >[LSRA](https://arxiv.org/abs/2004.11886): Lite Transformer with Long-Short Range Attention <br />
 >[GLU](https://arxiv.org/abs/2002.05202): GLU Variants Improve Transformer <br />
+
+#### Multi-task learning
+When developing a complicated machine learning application system, we need to consider multiple objectives, such as: ctr, cvr, dwell time, add basket etc. Multi-task learning give us a solution to simultaneously learn multiple objectives.  <br />
+
+There exists two type of multi-task learning: hard parameter sharing, soft parameter sharing. Here we use MMoE2, which is a soft parameter sharing method, and considering we use transformer to modeling inter-item relation, transformer is computation very costly, we use transformer as shared bottom layer, this architecture has also been tested by MT-DNN.  <br />
+
+
+**Reference**
+> [Survey](): An Overview of Multi-Task Learning in Deep Neural Networks <br />
+> [MMoE](): Modeling task relationships in multi-task learning with multi-gate mixture-of-experts <br />
+> [MMoE2](): Recommending What Video to Watch Next: A Multitask Ranking System <br />
+> [SNR](): Sub-Network Routing for Flexible Parameter Sharing in Multi-Task Learning <br />
+> [MT-DNN](): Multi-Task Deep Neural Networks for Natural Language Understanding <br />
+
 
 #### Engineering Related
 > **Embedding**: support share embedding <br />
@@ -42,11 +56,6 @@ hardware: (os) macos 10.13.4; (cpu) core i7 2.3 GHZ; (mem) 16GB <br />
 > **Distributed Training**: support parameter-server distributed training strategy <br />
 
 ### To do
-**Multi-task learning (MMoE)** <br />
-1) An Overview of Multi-Task Learning in Deep Neural Networks
-2) Modeling task relationships in multi-task learning with multi-gate mixture-of-experts <br />
-3) Recommending What Video to Watch Next: A Multitask Ranking System
-4) SNR: Sub-Network Routing for Flexible Parameter Sharing in Multi-Task Learning
 
 **Position Bias Modeling** <br />
 1) Recommending What Video to Watch Next: A Multitask Ranking System
