@@ -53,27 +53,27 @@ For regression objectives, such as dwell time, considering its range isn't betwe
 
 
 #### Important Details
-**Position Bias Modeling** <br />
+*Position Bias Modeling* <br />
 1) Training Phase: randomly mask 10% item's show position as unknown <br />
 2) Evaluation Phase: set item's show position as unknown <br />
 3) Modelling Strategy: using shallow tower do position bias modelling <br />
 
-**Ranking Position Modeling** <br />
+*Ranking Position Modeling* <br />
 1) Item position: given by rank phase
 2) Modelling Strategy: sum item position embedding to other item features <br />
 
-**Embedding** <br />
+*Embedding* <br />
 1) support share embedding <br />
 
-**Mini-batch aware Regularization**
+*Mini-batch aware Regularization*
 1) support mini-batch aware regularization for sparse categorical feature <br />
 
 
 #### Engineering Related
-> **XLA**: support xla <br />
-> **Mixed Precision**: support mixed precision, **this feature can only be used with tf >=2.2.0** <br />
-> **Distributed Training**: support parameter-server distributed training strategy <br />
+> *XLA*: support xla <br />
+> *Mixed Precision*: support mixed precision, *this feature can only be used with tf >=2.2.0* <br />
+> *Distributed Training*: support parameter-server distributed training strategy <br />
 
 #### To do
-**Model Distillation** <br />
+*Model Distillation* <br />
 1) Ranking Distillation- Learning Compact Ranking Models With High Performance for Recommender System
