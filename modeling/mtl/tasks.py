@@ -78,10 +78,8 @@ class Tasks(tf.keras.layers.Layer):
         labels = inputs[3]
         all_predictions = None
         for i, task in enumerate(self.tasks):
-            # output shape: (B, T, filter_size)
-            predictions = task['dense1'](gate_ws[i])
             # output shape: (B, T, 1)
-            predictions = task['dense2'](predictions)
+            predictions = task['dense'](gate_ws[i])
             # modelling show position bias
             predictions = predictions + position_bias
             predictions = task['activation'](predictions)
@@ -113,11 +111,9 @@ class Tasks(tf.keras.layers.Layer):
     def create_task(self, mtl_config):
         self.tasks = []
         for task in mtl_config['tasks']:
-            filter_size = task['filter_size']
             output_size = task['output_size']
             if output_size != 1:
                 raise ValueError("Invalid task ouput units: {}".format(output_size))
-            self.tasks.append({'dense1': tf.keras.layers.Dense(units=filter_size, activation='relu'),
-                               'dense2': tf.keras.layers.Dense(units=output_size),
+            self.tasks.append({'dense': tf.keras.layers.Dense(units=output_size),
                                'activation': tf.keras.layers.Activation(activation='sigmoid'),
                                'weight': task['weight'], 'name': task['name']})

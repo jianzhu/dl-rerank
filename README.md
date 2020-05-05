@@ -43,6 +43,15 @@ For regression objectives, such as dwell time, considering its range isn't betwe
 1) do log10 transformation on dwell time, then norm it with min-max normalization <br />
 2) bucketize dwell time, and transform regression problem to classification problem, and use predicted probabilities as class weight, and compute class's weighted sum value, take this value as the final result, then normalize it with the largest bucket's class. This method somehow similarly to McRank <br />
 
+**Performance (3 tasks)**<br />
+hidden_size=256, kernel_size=3, batch_size=256, layer_num=3, filter_size=1024 <br />
+hardware: (os) macos 10.13.4; (cpu) core i7 2.3 GHZ; (mem) 16GB <br />
+
+| transformer   |      flatten transformer      |  lite transformer |  light conv    |
+|---------------|:-----------------------------:|:-----------------:|:--------------:|
+| 12.9ms/sample |         11.5ms/sample         |   12.5ms/sample  |  10.5ms/sample   |
+
+
 **Reference**
 > [Survey](https://arxiv.org/abs/1706.05098): An Overview of Multi-Task Learning in Deep Neural Networks <br />
 > [MMoE](https://dl.acm.org/doi/10.1145/3219819.3220007): Modeling task relationships in multi-task learning with multi-gate mixture-of-experts <br />

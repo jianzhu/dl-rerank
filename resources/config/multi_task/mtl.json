@@ -11,19 +11,16 @@
   ],
   "tasks": [
     {
-      "filter_size": 64,
       "output_size": 1,
       "weight": 0.5,
       "name": "click"
     },
     {
-      "filter_size": 64,
       "output_size": 1,
       "weight": 0.3,
       "name": "add_basket"
     },
     {
-      "filter_size": 64,
       "output_size": 1,
       "weight": 0.2,
       "name": "buy"
