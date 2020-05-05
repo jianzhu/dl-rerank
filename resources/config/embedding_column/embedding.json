@@ -40,6 +40,18 @@
     ]
   },
   {
+    "dim": 120,
+    "features": [
+      "item.rank_pos"
+    ]
+  },
+  {
+    "dim": 64,
+    "features": [
+      "item.show_pos"
+    ]
+  },
+  {
     "dim": 4,
     "features": [
       "context.hour"

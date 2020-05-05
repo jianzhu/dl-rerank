@@ -30,9 +30,12 @@ flags.DEFINE_float('decay_rate', 0.96, 'decay rate')
 flags.DEFINE_float('l2_reg_w', 1e-4, 'mini-batch aware regularization weight')
 flags.DEFINE_integer('layer_num', 3, 'transformer layer num')
 flags.DEFINE_integer('head_num', 4, 'transformer head num')
+flags.DEFINE_integer('be_filter_size', 512, 'user behavior embedding filter size')
+flags.DEFINE_integer('ie_filter_size', 512, 'item embedding filter size')
+flags.DEFINE_integer('st_filter_size', 128, 'shallow tower filter size, modelling position bias')
 flags.DEFINE_integer('hidden_size', 256, 'transformer ffn filter size')
 flags.DEFINE_integer('filter_size', 1024, 'transformer ffn filter size')
-flags.DEFINE_string('self_att_type', 'transformer', 'self attention type: (transformer|light_conv)')
+flags.DEFINE_string('self_att_type', 'transformer', 'self attention type: (transformer|light_conv|lite_transformer)')
 flags.DEFINE_integer('kernel_size', 3, 'light convolution kernel size')
 
 # performance flags

@@ -3,8 +3,11 @@ import os
 
 import tensorflow as tf
 
+from absl import flags
 from modeling.mtl.expert import Expert
 from modeling.mtl.gate import Gate
+
+FLAGS = flags.FLAGS
 
 
 class Tasks(tf.keras.layers.Layer):
@@ -27,16 +30,23 @@ class Tasks(tf.keras.layers.Layer):
         self.create_gates(self.task_num, gate_dropout_rate)
         self.create_task(mtl_config)
 
+        # shallow tower used for modelling show position bias
+        self.st_dense1 = tf.keras.layers.Dense(units=FLAGS.st_filter_size, activation='relu')
+        self.st_dense2 = tf.keras.layers.Dense(units=1)
+
     def call(self, inputs, training=False):
         """inputs contains following two tensor
 
            input:
               input tensor: shape (B, T, H)
               input sequence mask tensor: shape (B, T)
+              item show position tensor: shape (B, T, H')
               tasks labels list: each label's shape (B, T, 1)
 
            output:
-              output tensor: shape (B, T, H)
+              tasks prediction: dict task -> prediction_tensor (shape: (B, T, 1))
+              tasks loss: dict task -> loss
+              total loss: scala
         """
         # apply experts on top of shared bottom layer
         # each expert output shape: (B, T, H')
@@ -60,11 +70,21 @@ class Tasks(tf.keras.layers.Layer):
         tasks_loss = {}
         total_loss = 0
 
-        labels = inputs[2]
+        # modelling show position bias
+        position_bias = self.st_dense1(inputs[2])
+        # (B, T, 1)
+        position_bias = self.st_dense2(position_bias)
+
+        labels = inputs[3]
         all_predictions = None
         for i, task in enumerate(self.tasks):
+            # output shape: (B, T, filter_size)
+            predictions = task['dense1'](gate_ws[i])
             # output shape: (B, T, 1)
-            predictions = task['dense'](gate_ws[i])
+            predictions = task['dense2'](predictions)
+            # modelling show position bias
+            predictions = predictions + position_bias
+            predictions = task['activation'](predictions)
             tasks_predictions[task['name']] = predictions
             if training:
                 # label shape: (B, T, 1), weights shape: (B, T, 1)
@@ -93,8 +113,11 @@ class Tasks(tf.keras.layers.Layer):
     def create_task(self, mtl_config):
         self.tasks = []
         for task in mtl_config['tasks']:
-            units = task['units']
-            if units != 1:
-                raise ValueError("Invalid task ouput units: {}".format(units))
-            self.tasks.append({'dense': tf.keras.layers.Dense(units=units, activation='sigmoid'),
-                                'weight': task['weight'], 'name': task['name']})
+            filter_size = task['filter_size']
+            output_size = task['output_size']
+            if output_size != 1:
+                raise ValueError("Invalid task ouput units: {}".format(output_size))
+            self.tasks.append({'dense1': tf.keras.layers.Dense(units=filter_size, activation='relu'),
+                               'dense2': tf.keras.layers.Dense(units=output_size),
+                               'activation': tf.keras.layers.Activation(activation='sigmoid'),
+                               'weight': task['weight'], 'name': task['name']})

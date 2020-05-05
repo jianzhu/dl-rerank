@@ -11,17 +11,20 @@
   ],
   "tasks": [
     {
-      "units": 1,
+      "filter_size": 64,
+      "output_size": 1,
       "weight": 0.5,
       "name": "click"
     },
     {
-      "units": 1,
+      "filter_size": 64,
+      "output_size": 1,
       "weight": 0.3,
       "name": "add_basket"
     },
     {
-      "units": 1,
+      "filter_size": 64,
+      "output_size": 1,
       "weight": 0.2,
       "name": "buy"
     }

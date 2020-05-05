@@ -25,5 +25,19 @@
         "type": "sequence_categorical",
         "vocab": "goods_price.txt",
         "vocab_size": 100
+    },
+
+    "item.show_pos": {
+        "default": 0,
+        "type": "sequence_categorical",
+        "vocab": "show_position.txt",
+        "vocab_size": 100
+    },
+
+    "item.rank_pos": {
+        "default": 0,
+        "type": "sequence_categorical",
+        "vocab": "rank_position.txt",
+        "vocab_size": 30
     }
 }

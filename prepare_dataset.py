@@ -54,18 +54,27 @@ def gen_behavior_feature(features, configs):
         features[feature] = create_int_feature(seq)
 
 
-def gen_items_feature(features, configs):
+def gen_items_feature(features, configs, training):
     feature_info = [
         ('item.goods_ids', configs['item.goods_ids']['vocab_size']),
         ('item.shop_ids', configs['item.shop_ids']['vocab_size']),
         ('item.cate_ids', configs['item.cate_ids']['vocab_size']),
         ('item.goods_prices', configs['item.cate_ids']['vocab_size']),
+        ('item.show_pos', configs['item.show_pos']['vocab_size']),
+        ('item.rank_pos', configs['item.rank_pos']['vocab_size'])
     ]
 
     for feature, upb in feature_info:
         seq = []
         for _ in range(FLAGS.seq_len):
-            seq.append(random.randint(1, upb))
+            x = random.randint(1, upb)
+            if feature == 'item.show_pos':
+                if training:
+                    if random.random() < 0.1:  # randomly mask 10% item's show position as unknown
+                        x = 0
+                else:  # evaluation
+                    x = 0
+            seq.append(x)
         features[feature] = create_int_feature(seq)
 
 
@@ -99,14 +108,14 @@ def gen_buy_label(features):
     features["buy"] = create_int_feature(seq)
 
 
-def gen_tfrecord_file(file_name, record_num, configs):
+def gen_tfrecord_file(file_name, record_num, configs, training=True):
     writer = tf.io.TFRecordWriter(file_name)
     for _ in range(record_num):
         # feature info
         features = collections.OrderedDict()
         gen_user_feature(features, configs)
         gen_behavior_feature(features, configs)
-        gen_items_feature(features, configs)
+        gen_items_feature(features, configs, training)
         gen_context_feature(features, configs)
         gen_click_label(features)
         gen_add_basket_label(features)
@@ -132,7 +141,7 @@ def main(_):
     # eval example
     eval_file = os.path.join(FLAGS.eval_dir, "part-00000")
     record_num = 100
-    gen_tfrecord_file(eval_file, record_num, configs)
+    gen_tfrecord_file(eval_file, record_num, configs, training=False)
 
 
 if __name__ == '__main__':

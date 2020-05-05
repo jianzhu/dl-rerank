@@ -96,5 +96,5 @@ class PRM(tf.keras.layers.Layer):
         shared_bottom = self.self_attention([inputs, items[1]], training=training)
 
         # do multi-task learning
-        inputs = [shared_bottom, tf.sequence_mask(items[1]), labels]
+        inputs = [shared_bottom, tf.sequence_mask(items[1]), items[2], labels]
         return self.tasks(inputs)

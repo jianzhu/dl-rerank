@@ -28,13 +28,10 @@ class UserBehaviorEmbedding(tf.keras.layers.Layer):
             # multi-layer projection
             self.mlp_bn1 = tf.keras.layers.BatchNormalization(epsilon=1e-6)
             self.mlp_drop1 = tf.keras.layers.Dropout(rate=rate)
-            self.mlp_dense1 = tf.keras.layers.Dense(256, activation='relu')
+            self.mlp_dense1 = tf.keras.layers.Dense(FLAGS.be_filter_size, activation='relu')
             self.mlp_bn2 = tf.keras.layers.BatchNormalization(epsilon=1e-6)
             self.mlp_drop2 = tf.keras.layers.Dropout(rate=rate)
-            self.mlp_dense2 = tf.keras.layers.Dense(128, activation='relu')
-            self.mlp_bn3 = tf.keras.layers.BatchNormalization(epsilon=1e-6)
-            self.mlp_drop3 = tf.keras.layers.Dropout(rate=rate)
-            self.mlp_dense3 = tf.keras.layers.Dense(FLAGS.hidden_size, activation='relu')
+            self.mlp_dense2 = tf.keras.layers.Dense(FLAGS.hidden_size, activation='relu')
 
     def mlp(self, inputs, training=False):
         x = self.mlp_bn1(inputs, training=training)
@@ -42,10 +39,7 @@ class UserBehaviorEmbedding(tf.keras.layers.Layer):
         x = self.mlp_dense1(x)
         x = self.mlp_bn2(x, training=training)
         x = self.mlp_drop2(x, training=training)
-        x = self.mlp_dense2(x)
-        x = self.mlp_bn3(x, training=training)
-        x = self.mlp_drop3(x, training=training)
-        return self.mlp_dense3(x)
+        return self.mlp_dense2(x)
 
     def call(self, features, training=False):
         device_spec = tf.DeviceSpec(device_type="CPU", device_index=0)

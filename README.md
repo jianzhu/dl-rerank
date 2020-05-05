@@ -51,20 +51,29 @@ For regression objectives, such as dwell time, considering its range isn't betwe
 > [MT-DNN](https://arxiv.org/abs/1901.11504): Multi-Task Deep Neural Networks for Natural Language Understanding <br />
 > [McRank](https://papers.nips.cc/paper/3270-mcrank-learning-to-rank-using-multiple-classification-and-gradient-boosting.pdf): McRank: Learning to Rank Using Multiple Classification and Gradient Boosting
 
+
+#### Important Details
+**Position Bias Modeling** <br />
+1) Training Phase: randomly mask 10% item's show position as unknown <br />
+2) Evaluation Phase: set item's show position as unknown <br />
+3) Modelling Strategy: using shallow tower do position bias modelling <br />
+
+**Ranking Position Modeling** <br />
+1) Item position: given by rank phase
+2) Modelling Strategy: sum item position embedding to other item features <br />
+
+**Embedding** <br />
+1) support share embedding <br />
+
+**Mini-batch aware Regularization**
+1) support mini-batch aware regularization for sparse categorical feature <br />
+
+
 #### Engineering Related
-> **Embedding**: support share embedding <br />
-> **MBA**: support mini-batch aware regularization for sparse categorical feature <br />
 > **XLA**: support xla <br />
 > **Mixed Precision**: support mixed precision, **this feature can only be used with tf >=2.2.0** <br />
 > **Distributed Training**: support parameter-server distributed training strategy <br />
 
-### To do
-
-**Position Bias Modeling** <br />
-1) Recommending What Video to Watch Next: A Multitask Ranking System
-
-**Ranking Position Modeling** <br />
-1) Personalized Re-ranking for Recommendation
-
+#### To do
 **Model Distillation** <br />
 1) Ranking Distillation- Learning Compact Ranking Models With High Performance for Recommender System
