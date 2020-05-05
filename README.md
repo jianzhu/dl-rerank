@@ -32,7 +32,7 @@ There exists two type of multi-task learning: hard parameter sharing, soft param
 
 For regression objectives, such as dwell time, considering its range isn't between 0 and 1, we have two methods to cope with it: <br />
 1) do log10 transformation on dwell time, then norm it with min-max normalization <br />
-2) bucketize dwell time, and transform regression problem to classification problem, and use predicted probabilities as class weight, and compute class's weighted sum value, take this value as the final result, then normalize it with the largest bucket's class. This method somehow similarly to McRank <br />
+2) bucketize dwell time, and transform regression problem to classification problem, and use predicted probabilities as class weight, and compute class's weighted sum value, take this value as the final result, then normalize it with the largest bucket's class. This method somehow similar to McRank <br />
 
 **Performance (3 tasks)**<br />
 hidden_size=256, kernel_size=3, batch_size=256, layer_num=3, filter_size=1024 <br />
