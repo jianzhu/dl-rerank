@@ -68,6 +68,9 @@ hardware: (os) macos 10.13.4; (cpu) core i7 2.3 GHZ; (mem) 16GB <br />
 *Mini-batch aware Regularization*
 1) support mini-batch aware regularization for sparse categorical feature <br />
 
+*Dimension Reduction* <br />
+When modeling user behavior or item info, we usually use billions of categorical features, considering training & serving cost, we can do feature selection or use hash tricks to reduce each type of categorical feature dimension, or use them together. Here we implemented feature selection based modelling strategy, if we want to use hash tricks for feature reduction, we can use categorical_column_with_hash_bucket.
+
 
 #### Engineering Related
 > *XLA*: support xla <br />
