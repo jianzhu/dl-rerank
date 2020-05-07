@@ -78,5 +78,5 @@ When modeling user behavior or item info, we usually use billions of categorical
 > *Distributed Training*: support parameter-server distributed training strategy <br />
 
 #### To do
-*Model Distillation* <br />
-1) Ranking Distillation- Learning Compact Ranking Models With High Performance for Recommender System
+*Query Item Text Match Modeling* <br />
+1) modeling query item text field matching with sub-network
