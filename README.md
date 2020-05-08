@@ -85,5 +85,3 @@ When modeling user behavior or item info, we usually use billions of categorical
 > *XLA*: support xla <br />
 > *Mixed Precision*: support mixed precision, *this feature can only be used with tf >=2.2.0* <br />
 > *Distributed Training*: support parameter-server distributed training strategy <br />
-
-#### To do
