@@ -29,7 +29,7 @@ Convolutional kernel give us another path to do self attention, we can finish th
 We modeling query item text field matching with Convolutional Neural Network
 
 **Reference**
->[TextCNN](https://arxiv.org/abs/1408.5882): Convolutional Neural Networks for Sentence Classification
+>[TextCNN](https://arxiv.org/abs/1408.5882): Convolutional Neural Networks for Sentence Classification <br />
 >[RankCNN](http://citeseerx.ist.psu.edu/viewdoc/download?doi=10.1.1.723.6492&rep=rep1&type=pdf): Learning to Rank Short Text Pairs with Convolutional Deep Neural Networks
 
 
