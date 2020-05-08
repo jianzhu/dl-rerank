@@ -5,25 +5,29 @@
     "vocab": "goods_id.txt",
     "vocab_size": 1000000
   },
-
   "user.visited_shop_ids": {
     "default": 0,
     "type": "sequence_categorical",
     "vocab": "shop_id.txt",
     "vocab_size": 10000
   },
-
   "user.visited_cate_ids": {
     "default": 0,
     "type": "sequence_categorical",
     "vocab": "cate_id.txt",
     "vocab_size": 1000
   },
-
   "user.visited_goods_prices": {
     "default": 0,
     "type": "sequence_categorical",
     "vocab": "goods_price.txt",
     "vocab_size": 100
+  },
+  "user.query_word_ids": {
+    "default": 0,
+    "query_len": 16,
+    "type": "sequence_categorical",
+    "vocab": "word_id.txt",
+    "vocab_size": 100000
   }
 }

@@ -85,16 +85,13 @@ class PRM(tf.keras.layers.Layer):
         user_profile = self.user_profile_emb(features, training=training)
         user_behavior = self.user_behavior_emb(features, training=training)
         context = self.context_emb(features, training=training)
-
         # user interest info
         # shape: (B, T, E)
         personal_rep = self.din([user_behavior[0], items[0], user_profile, context], training=training)
-        # shape: (B, T, 32)
+        # shape: (B, T, E')
         inputs = self.mlp_emb(tf.concat([personal_rep, items[0]], axis=-1), training=training)
-
         # do self-attention
         shared_bottom = self.self_attention([inputs, items[1]], training=training)
-
         # do multi-task learning
         inputs = [shared_bottom, tf.sequence_mask(items[1]), items[2], labels]
         return self.tasks(inputs)

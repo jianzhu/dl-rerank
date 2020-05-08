@@ -62,6 +62,30 @@ class FeatureConfig(object):
         self.config_dir = config_dir
         self.vocab_dir = vocab_dir
         self.feature_columns = collections.OrderedDict()
+        self.feature_configs = {}
+        self.embedding_configs = {}
+
+    def get_feature_configs(self):
+        if len(self.feature_configs) != 0:
+            return self.feature_configs
+
+        # generate feature column info
+        self.parse_feature_columns(self.config_dir, self.vocab_dir, self.feature_columns)
+        # generate embedding column info
+        self.parse_embedding_columns(self.config_dir, self.feature_columns)
+
+        return self.feature_configs
+
+    def get_embedding_configs(self):
+        if len(self.embedding_configs) != 0:
+            return self.embedding_configs
+
+        # generate feature column info
+        self.parse_feature_columns(self.config_dir, self.vocab_dir, self.feature_columns)
+        # generate embedding column info
+        self.parse_embedding_columns(self.config_dir, self.feature_columns)
+
+        return self.embedding_configs
 
     def get_feature_columns(self):
         if len(self.feature_columns) != 0:
@@ -74,13 +98,13 @@ class FeatureConfig(object):
 
         return self.feature_columns
 
-    @staticmethod
-    def parse_feature_columns(config_dir, vocab_dir, feature_columns):
+    def parse_feature_columns(self, config_dir, vocab_dir, feature_columns):
         fc_dir = os.path.join(config_dir, 'feature_column')
         # load feature column config
         for config_file in tf.io.gfile.listdir(fc_dir):
             with tf.io.gfile.GFile(os.path.join(fc_dir, config_file)) as f:
                 config = json.loads(''.join([line for line in f.readlines()]))
+                self.feature_configs.update(config)
 
             for feature, desc in config.items():
                 ftype = FeatureType[desc['type']]
@@ -109,8 +133,7 @@ class FeatureConfig(object):
         feature_columns[key] = tf.feature_column.sequence_numeric_column(key=key, dtype=tf.int64)
         return feature_columns
 
-    @staticmethod
-    def parse_embedding_columns(config_dir, feature_columns):
+    def parse_embedding_columns(self, config_dir, feature_columns):
         path = os.path.join(os.path.join(config_dir, 'embedding_column'), 'embedding.json')
         with tf.io.gfile.GFile(path) as f:
             embedding_configs = json.loads(''.join([line for line in f.readlines()]))
@@ -118,7 +141,10 @@ class FeatureConfig(object):
         for config in embedding_configs:
             dim = config['dim']
             features = config['features']
-            sub_feature_columns = FeatureConfig.get_sub_feature_columns(feature_columns, features)
+            for feature in features:
+                self.embedding_configs[feature] = dim
+
+            sub_feature_columns = self.get_sub_feature_columns(feature_columns, features)
             if len(sub_feature_columns) == 0:
                 raise ValueError("empty feature list in embedding config")
             elif len(sub_feature_columns) == 1:
@@ -129,8 +155,7 @@ class FeatureConfig(object):
             for feature, embedding_column in zip(features, sub_embedding_columns):
                 feature_columns[feature] = embedding_column
 
-    @staticmethod
-    def get_sub_feature_columns(feature_columns, features):
+    def get_sub_feature_columns(self, feature_columns, features):
         sub_feature_columns = []
         for feature in features:
             if feature not in feature_columns:

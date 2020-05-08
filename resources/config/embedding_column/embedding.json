@@ -22,7 +22,7 @@
     "dim": 32,
     "features": [
       "user.visited_shop_ids",
-       "item.shop_ids"
+      "item.shop_ids"
     ]
   },
   {
@@ -40,7 +40,15 @@
     ]
   },
   {
-    "dim": 120,
+    "dim": 64,
+    "features": [
+      "user.query_word_ids",
+      "item.title_word_ids",
+      "item.content_word_ids"
+    ]
+  },
+  {
+    "dim": 216,
     "features": [
       "item.rank_pos"
     ]

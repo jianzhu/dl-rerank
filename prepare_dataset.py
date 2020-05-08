@@ -61,7 +61,7 @@ def gen_items_feature(features, configs, training):
         ('item.cate_ids', configs['item.cate_ids']['vocab_size']),
         ('item.goods_prices', configs['item.cate_ids']['vocab_size']),
         ('item.show_pos', configs['item.show_pos']['vocab_size']),
-        ('item.rank_pos', configs['item.rank_pos']['vocab_size'])
+        ('item.rank_pos', configs['item.rank_pos']['vocab_size']),
     ]
 
     for feature, upb in feature_info:
@@ -74,6 +74,45 @@ def gen_items_feature(features, configs, training):
                         x = 0
                 else:  # evaluation
                     x = 0
+            seq.append(x)
+        features[feature] = create_int_feature(seq)
+
+
+def gen_query_text_features(features, configs):
+    features_info = [
+        ('user.query_word_ids',
+         configs['user.query_word_ids']['vocab_size'],
+         configs['user.query_word_ids']['query_len']),
+    ]
+
+    for feature_info in features_info:
+        feature = feature_info[0]
+        upb = feature_info[1]
+        total_word_num = feature_info[2]
+        seq = []
+        for _ in range(total_word_num):
+            x = random.randint(1, upb)
+            seq.append(x)
+        features[feature] = create_int_feature(seq)
+
+
+def gen_items_text_features(features, configs):
+    features_info = [
+        ('item.title_word_ids',
+         configs['item.title_word_ids']['vocab_size'],
+         configs['item.title_word_ids']['title_len']),
+        ('item.content_word_ids',
+         configs['item.content_word_ids']['vocab_size'],
+         configs['item.content_word_ids']['content_len'])
+    ]
+
+    for feature_info in features_info:
+        feature = feature_info[0]
+        upb = feature_info[1]
+        total_word_num = feature_info[2] * FLAGS.seq_len
+        seq = []
+        for _ in range(total_word_num):
+            x = random.randint(1, upb)
             seq.append(x)
         features[feature] = create_int_feature(seq)
 
@@ -115,7 +154,9 @@ def gen_tfrecord_file(file_name, record_num, configs, training=True):
         features = collections.OrderedDict()
         gen_user_feature(features, configs)
         gen_behavior_feature(features, configs)
+        gen_query_text_features(features, configs)
         gen_items_feature(features, configs, training)
+        gen_items_text_features(features, configs)
         gen_context_feature(features, configs)
         gen_click_label(features)
         gen_add_basket_label(features)

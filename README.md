@@ -25,6 +25,14 @@ Convolutional kernel give us another path to do self attention, we can finish th
 >[LSRA](https://arxiv.org/abs/2004.11886): Lite Transformer with Long-Short Range Attention <br />
 >[GLU](https://arxiv.org/abs/2002.05202): GLU Variants Improve Transformer <br />
 
+#### Query & Item text Modeling
+We modeling query item text field matching with Convolutional Neural Network
+
+**Reference**
+>[TextCNN](https://arxiv.org/abs/1408.5882): Convolutional Neural Networks for Sentence Classification
+>[RankCNN](http://citeseerx.ist.psu.edu/viewdoc/download?doi=10.1.1.723.6492&rep=rep1&type=pdf): Learning to Rank Short Text Pairs with Convolutional Deep Neural Networks
+
+
 #### Multi-task learning
 When developing a complicated machine learning application system, we need to consider multiple objectives, such as: click, add basket, buy etc. Multi-task learning give us a solution to simultaneously learn multiple objectives.  <br />
 
@@ -35,12 +43,13 @@ For regression objectives, such as dwell time, considering its range isn't betwe
 2) bucketize dwell time, and transform regression problem to classification problem, and use predicted probabilities as class weight, and compute class's weighted sum value, take this value as the final result, then normalize it with the largest bucket's class. This method somehow similar to McRank <br />
 
 **Performance (3 tasks)**<br />
-hidden_size=256, kernel_size=3, batch_size=256, layer_num=3, filter_size=1024 <br />
+hidden_size=256, kernel_size=3, batch_size=32, layer_num=3, filter_size=1024 <br />
+qtxt_filters=32, qtxt_kernel_sizes='2,3', ttxt_filters=32, ttxt_kernel_sizes='2,3', ctxt_filters=16, ctxt_kernel_sizes='2,3' <br />
 hardware: (os) macos 10.13.4; (cpu) core i7 2.3 GHZ; (mem) 16GB <br />
 
 | transformer   |      flatten transformer      |  lite transformer |  light conv    |
 |---------------|:-----------------------------:|:-----------------:|:--------------:|
-| 12.9ms/sample |         11.5ms/sample         |   12.5ms/sample  |  10.5ms/sample   |
+| 21ms/sample |         19.3ms/sample         |   20.8ms/sample  |  19.2ms/sample   |
 
 
 **Reference**
@@ -78,5 +87,3 @@ When modeling user behavior or item info, we usually use billions of categorical
 > *Distributed Training*: support parameter-server distributed training strategy <br />
 
 #### To do
-*Query Item Text Match Modeling* <br />
-1) modeling query item text field matching with sub-network

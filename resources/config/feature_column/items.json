@@ -1,43 +1,52 @@
 {
-    "item.goods_ids": {
-        "default": 0,
-        "type": "sequence_categorical",
-        "vocab": "goods_id.txt",
-        "vocab_size": 1000000
-    },
-
-    "item.shop_ids": {
-        "default": 0,
-        "type": "sequence_categorical",
-        "vocab": "shop_id.txt",
-        "vocab_size": 10000
-    },
-
-    "item.cate_ids": {
-        "default": 0,
-        "type": "sequence_categorical",
-        "vocab": "cate_id.txt",
-        "vocab_size": 1000
-    },
-
-    "item.goods_prices": {
-        "default": 0,
-        "type": "sequence_categorical",
-        "vocab": "goods_price.txt",
-        "vocab_size": 100
-    },
-
-    "item.show_pos": {
-        "default": 0,
-        "type": "sequence_categorical",
-        "vocab": "show_position.txt",
-        "vocab_size": 100
-    },
-
-    "item.rank_pos": {
-        "default": 0,
-        "type": "sequence_categorical",
-        "vocab": "rank_position.txt",
-        "vocab_size": 30
-    }
+  "item.goods_ids": {
+    "default": 0,
+    "type": "sequence_categorical",
+    "vocab": "goods_id.txt",
+    "vocab_size": 1000000
+  },
+  "item.shop_ids": {
+    "default": 0,
+    "type": "sequence_categorical",
+    "vocab": "shop_id.txt",
+    "vocab_size": 10000
+  },
+  "item.cate_ids": {
+    "default": 0,
+    "type": "sequence_categorical",
+    "vocab": "cate_id.txt",
+    "vocab_size": 1000
+  },
+  "item.goods_prices": {
+    "default": 0,
+    "type": "sequence_categorical",
+    "vocab": "goods_price.txt",
+    "vocab_size": 100
+  },
+  "item.show_pos": {
+    "default": 0,
+    "type": "sequence_categorical",
+    "vocab": "show_position.txt",
+    "vocab_size": 100
+  },
+  "item.rank_pos": {
+    "default": 0,
+    "type": "sequence_categorical",
+    "vocab": "rank_position.txt",
+    "vocab_size": 30
+  },
+  "item.title_word_ids": {
+    "default": 0,
+    "title_len": 32,
+    "type": "sequence_categorical",
+    "vocab": "word_id.txt",
+    "vocab_size": 100000
+  },
+  "item.content_word_ids": {
+    "default": 0,
+    "content_len": 200,
+    "type": "sequence_categorical",
+    "vocab": "word_id.txt",
+    "vocab_size": 100000
+  }
 }

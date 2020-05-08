@@ -1,6 +1,9 @@
 import tensorflow as tf
 
+from absl import flags
 from modeling.activations import dice
+
+FLAGS = flags.FLAGS
 
 
 class DIN(tf.keras.layers.Layer):
@@ -22,13 +25,10 @@ class DIN(tf.keras.layers.Layer):
         # multi-layer nonlinear transformation
         self.mlp_bn1 = tf.keras.layers.BatchNormalization(epsilon=1e-6)
         self.mlp_drop1 = tf.keras.layers.Dropout(rate=dropout_rate)
-        self.mlp_dense1 = tf.keras.layers.Dense(units=256, activation='relu')
+        self.mlp_dense1 = tf.keras.layers.Dense(units=FLAGS.din_filter_size, activation='relu')
         self.mlp_bn2 = tf.keras.layers.BatchNormalization(epsilon=1e-6)
         self.mlp_drop2 = tf.keras.layers.Dropout(rate=dropout_rate)
-        self.mlp_dense2 = tf.keras.layers.Dense(units=128, activation='relu')
-        self.mlp_bn3 = tf.keras.layers.BatchNormalization(epsilon=1e-6)
-        self.mlp_drop3 = tf.keras.layers.Dropout(rate=dropout_rate)
-        self.mlp_dense3 = tf.keras.layers.Dense(units=64, activation='relu')
+        self.mlp_dense2 = tf.keras.layers.Dense(units=FLAGS.din_hidden_size, activation='relu')
 
     def mlp(self, interest, user_profile, context, iseq_len, training=False):
         """do multi-layer nonlinear transformation"""
@@ -49,12 +49,7 @@ class DIN(tf.keras.layers.Layer):
         x = self.mlp_drop1(x, training=training)
         x = self.mlp_dense1(x, training=training)
         x = self.mlp_bn2(x, training=training)
-        x = self.mlp_drop2(x, training=training)
-        x = self.mlp_dense2(x, training=training)
-        x = self.mlp_bn3(x, training=training)
-        x = self.mlp_drop3(x, training=training)
-        # (B, T', 64)
-        return self.mlp_dense3(x, training=training)
+        return self.mlp_drop2(x, training=training)
 
     def call(self, inputs, training=False):
         """

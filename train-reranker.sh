@@ -20,22 +20,22 @@ fi
 
 time=`date +%s`
 # chief
-TF_CONFIG='{"cluster": {"chief": ["localhost:2222"], "worker": ["localhost:2223"], "ps": ["localhost:2226"], "evaluator": ["localhost:2227"]}, "task": {"type": "chief", "index": 0}}' nohup python reranker_trainer.py --config_dir=resources/config --vocab_dir=resources/vocab --train_files_dir=resources/train --eval_files_dir=resources/eval --model_path=rerank_model --use_float16=False --enable_xla=False --train_max_steps=100 --checkpoint_steps=20 >logs/chief-$time 2>&1 &
+TF_CONFIG='{"cluster": {"chief": ["localhost:2222"], "worker": ["localhost:2223"], "ps": ["localhost:2226"], "evaluator": ["localhost:2227"]}, "task": {"type": "chief", "index": 0}}' nohup python reranker_trainer.py --config_dir=resources/config --vocab_dir=resources/vocab --train_files_dir=resources/train --eval_files_dir=resources/eval --model_path=rerank_model --use_float16=False --enable_xla=False --train_max_steps=100 --checkpoint_steps=20  --batch_size=16 >logs/chief-$time 2>&1 &
 chief_pid=`echo $!`
 echo "chief pid: $chief_pid"
 
 # ps
-TF_CONFIG='{"cluster": {"chief": ["localhost:2222"], "worker": ["localhost:2223"], "ps": ["localhost:2226"], "evaluator": ["localhost:2227"]}, "task": {"type": "ps", "index": 0}}' nohup python reranker_trainer.py --config_dir=resources/config --vocab_dir=resources/vocab --train_files_dir=resources/train --eval_files_dir=resources/eval --model_path=rerank_model --use_float16=False --enable_xla=False --train_max_steps=100 --checkpoint_steps=20 >logs/ps-$time 2>&1 &
+TF_CONFIG='{"cluster": {"chief": ["localhost:2222"], "worker": ["localhost:2223"], "ps": ["localhost:2226"], "evaluator": ["localhost:2227"]}, "task": {"type": "ps", "index": 0}}' nohup python reranker_trainer.py --config_dir=resources/config --vocab_dir=resources/vocab --train_files_dir=resources/train --eval_files_dir=resources/eval --model_path=rerank_model --use_float16=False --enable_xla=False --train_max_steps=100 --checkpoint_steps=20  --batch_size=16 >logs/ps-$time 2>&1 &
 ps_pid=`echo $!`
 echo "ps pid: $ps_pid"
 
 # worker
-TF_CONFIG='{"cluster": {"chief": ["localhost:2222"], "worker": ["localhost:2223"], "ps": ["localhost:2226"], "evaluator": ["localhost:2227"]}, "task": {"type": "worker", "index": 0}}' nohup python reranker_trainer.py --config_dir=resources/config --vocab_dir=resources/vocab --train_files_dir=resources/train --eval_files_dir=resources/eval --model_path=rerank_model --use_float16=False --enable_xla=False --train_max_steps=100 --checkpoint_steps=20 >logs/worker-$time 2>&1 &
+TF_CONFIG='{"cluster": {"chief": ["localhost:2222"], "worker": ["localhost:2223"], "ps": ["localhost:2226"], "evaluator": ["localhost:2227"]}, "task": {"type": "worker", "index": 0}}' nohup python reranker_trainer.py --config_dir=resources/config --vocab_dir=resources/vocab --train_files_dir=resources/train --eval_files_dir=resources/eval --model_path=rerank_model --use_float16=False --enable_xla=False --train_max_steps=100 --checkpoint_steps=20 --batch_size=16 >logs/worker-$time 2>&1 &
 worker_pid=`echo $!`
 echo "worker pid: $worker_pid"
 
 # evaluator
-TF_CONFIG='{"cluster": {"chief": ["localhost:2222"], "worker": ["localhost:2223"], "ps": ["localhost:2226"], "evaluator": ["localhost:2227"]}, "task": {"type": "evaluator", "index": 0}}' python reranker_trainer.py --config_dir=resources/config --vocab_dir=resources/vocab --train_files_dir=resources/train --eval_files_dir=resources/eval --model_path=rerank_model --use_float16=False --enable_xla=False --train_max_steps=100 --checkpoint_steps=20 >logs/evaluator-$time 2>&1 &
+TF_CONFIG='{"cluster": {"chief": ["localhost:2222"], "worker": ["localhost:2223"], "ps": ["localhost:2226"], "evaluator": ["localhost:2227"]}, "task": {"type": "evaluator", "index": 0}}' python reranker_trainer.py --config_dir=resources/config --vocab_dir=resources/vocab --train_files_dir=resources/train --eval_files_dir=resources/eval --model_path=rerank_model --use_float16=False --enable_xla=False --train_max_steps=100 --checkpoint_steps=20 --batch_size=16 >logs/evaluator-$time 2>&1 &
 evaluator_pid=`echo $!`
 echo "evaluator pid: $evaluator_pid"
 
